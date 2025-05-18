@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schweizerdeutsche Uhr</title>
+    <style>
+        :root {
+            --text-color: white;
+            --bg-color: black;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 20px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .menu-icon {
+            cursor: pointer;
+            width: 30px;
+            height: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .fullscreen-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .fullscreen-icon {
+            display: inline-block;
+        }
+        
+        .menu-line {
+            height: 3px;
+            background-color: var(--text-color);
+            transition: 0.3s;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            height: 100%;
+            width: 300px;
+            background-color: #333;
+            transition: 0.3s;
+            padding: 20px;
+            z-index: 100;
+            overflow-y: auto;
+        }
+        
+        .sidebar.active {
+            left: 0;
+        }
+        
+        .close-btn {
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .clock-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .clock {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .second-hand {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: var(--text-color);
+            border-radius: 50%;
+            transform-origin: center;
+        }
+        
+        .time-text {
+            font-size: 2.8rem;
+            text-align: center;
+            z-index: 10;
+            max-width: 80%;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            background-color: #444;
+            border: none;
+            color: white;
+        }
+        
+        button {
+            padding: 10px 15px;
+            background-color: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #666;
+        }
+        
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="menu-icon" onclick="toggleSidebar()">
+            <div class="menu-line"></div>
+            <div class="menu-line"></div>
+            <div class="menu-line"></div>
+        </div>
+        <button id="fullscreenBtn" class="fullscreen-btn" onclick="toggleFullscreen()">
+            <span class="fullscreen-icon">⛶</span>
+        </button>
+    </div>
+    
+    <div class="overlay" onclick="toggleSidebar()"></div>
+    
+    <div class="sidebar">
+        <div class="close-btn" onclick="toggleSidebar()">×</div>
+        <h2>Einstellungen</h2>
+        
+        <div class="form-group">
+            <h3>Account</h3>
+            <div id="loginForm">
+                <label for="email">E-Mail:</label>
+                <input type="email" id="email" placeholder="deine@email.ch">
+                <label for="password">Passwort:</label>
+                <input type="password" id="password" placeholder="Passwort">
+                <button onclick="login()">Anmelden</button>
+                <button onclick="register()">Registrieren</button>
+            </div>
+            <div id="loggedInInfo" style="display: none;">
+                <p>Angemeldet als: <span id="userEmail"></span></p>
+                <button onclick="logout()">Abmelden</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <h3>Farbeinstellungen</h3>
+            <label for="textColor">Textfarbe:</label>
+            <input type="color" id="textColor" value="#ffffff">
+            <label for="bgColor">Hintergrundfarbe:</label>
+            <input type="color" id="bgColor" value="#000000">
+            <button onclick="changeColors()">Farben übernehmen</button>
+        </div>
+        
+        <div class="form-group">
+            <h3>Zeitzone</h3>
+            <label for="timezone">Zeitzone wählen:</label>
+            <select id="timezone">
+                <option value="Europe/Zurich">Schweiz (Zürich)</option>
+                <option value="Europe/Berlin">Deutschland (Berlin)</option>
+                <option value="Europe/Vienna">Österreich (Wien)</option>
+                <option value="Europe/Paris">Frankreich (Paris)</option>
+                <option value="Europe/London">UK (London)</option>
+                <option value="America/New_York">USA (New York)</option>
+                <option value="America/Los_Angeles">USA (Los Angeles)</option>
+                <option value="Asia/Tokyo">Japan (Tokyo)</option>
+                <option value="Australia/Sydney">Australien (Sydney)</option>
+            </select>
+            <button onclick="changeTimezone()">Zeitzone übernehmen</button>
+        </div>
+        
+        <div class="form-group">
+            <h3>Dialekt</h3>
+            <label for="dialect">Schweizerdeutschen Dialekt wählen:</label>
+            <select id="dialect">
+                <option value="zuerich">Zürich</option>
+                <option value="bern">Bern</option>
+                <option value="basel">Basel</option>
+                <option value="luzern">Luzern</option>
+                <option value="stgallen">St. Gallen</option>
+                <option value="wallis">Wallis</option>
+                <option value="aargau">Aargau</option>
+                <option value="thurgau">Thurgau</option>
+                <option value="graubuenden">Graubünden</option>
+                <option value="appenzell">Appenzell</option>
+                <option value="custom">Eigener Dialekt</option>
+            </select>
+            
+            <div id="customDialectSettings" style="display: none; margin-top: 15px;">
+                <h4>Eigenen Dialekt bearbeiten</h4>
+                <label for="customPrefix">Uhrzeitpräfix (z.B. "s isch "):</label>
+                <input type="text" id="customPrefix" value="s isch ">
+                
+                <label for="customHalf">Halb (z.B. "halbi "):</label>
+                <input type="text" id="customHalf" value="halbi ">
+                
+                <label for="customQuarter">Viertel (z.B. "viertel "):</label>
+                <input type="text" id="customQuarter" value="viertel ">
+                
+                <label for="customPast">Nach (z.B. "ab "):</label>
+                <input type="text" id="customPast" value="ab ">
+                
+                <label for="customTo">Vor (z.B. "vor "):</label>
+                <input type="text" id="customTo" value="vor ">
+                
+                <label for="customAlmost">Fast/Gleich (z.B. "gli "):</label>
+                <input type="text" id="customAlmost" value="gli ">
+                
+                <h4>Zahlen anpassen</h4>
+                <div id="customHourInputs"></div>
+            </div>
+            
+            <button onclick="changeDialect()">Dialekt übernehmen</button>
+        </div>
+        
+        <button onclick="saveSettings()">Alle Einstellungen speichern</button>
+    </div>
+    
+    <div class="clock-container">
+        <div class="clock">
+            <div class="time-text" id="timeText">Laded...</div>
+            <div class="second-hand" id="secondHand"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Globale Variablen
+        let currentUser = null;
+        let selectedDialect = "zuerich";
+        let selectedTimezone = "Europe/Zurich";
+        let users = JSON.parse(localStorage.getItem('users')) || {};
+        
+        // Initialisierung
+        function init() {
+            checkLoginStatus();
+            loadSavedSettings();
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Event-Listener für Dialekt-Änderungen
+            document.getElementById('dialect').addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    document.getElementById('customDialectSettings').style.display = 'block';
+                    createCustomHourInputs();
+                } else {
+                    document.getElementById('customDialectSettings').style.display = 'none';
+                }
+            });
+        }function init() {
+            checkLoginStatus();
+            loadSavedSettings();
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+        
+        // Uhr-Funktionen
+        function updateClock() {
+            const now = new Date();
+            
+            // Konvertiere in die ausgewählte Zeitzone
+            const options = { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', hour12: false };
+            const timeStr = now.toLocaleTimeString('de-CH', options);
+            
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            // Sekundenzeiger aktualisieren
+            const secondsAngle = seconds * 6; // 360 Grad / 60 Sekunden = 6 Grad pro Sekunde
+            const radius = 220; // Radius des Kreises
+            
+            const x = radius * Math.sin(secondsAngle * Math.PI / 180);
+            const y = -radius * Math.cos(secondsAngle * Math.PI / 180);
+            
+            document.getElementById('secondHand').style.transform = `translate(${x}px, ${y}px)`;
+            
+            // Text auf Schweizerdeutsch aktualisieren
+            const swissGermanTime = convertToSwissGerman(hours, minutes, selectedDialect);
+            document.getElementById('timeText').innerText = swissGermanTime;
+        }
+        
+        // Schweizerdeutsche Zeit-Konvertierungen für verschiedene Dialekte
+        function convertToSwissGerman(hours, minutes, dialect) {
+            // Stunden auf Schweizerdeutsch (Basis für alle Dialekte)
+            const hourNames = {
+                0: 'zwölfi', 1: 'eis', 2: 'zwei', 3: 'drü', 4: 'vieri', 
+                5: 'föifi', 6: 'sächsi', 7: 'sibni', 8: 'achti', 
+                9: 'nüni', 10: 'zähni', 11: 'elfi', 12: 'zwölfi'
+            };
+            
+            // Minuten auf Schweizerdeutsch
+            const minuteNames = {
+                1: 'eis', 2: 'zwöi', 3: 'drü', 4: 'vier', 5: 'föif',
+                6: 'sächs', 7: 'sibä', 8: 'acht', 9: 'nün', 10: 'zäh',
+                11: 'elf', 12: 'zwölf', 13: 'drizäh', 14: 'vierzäh', 15: 'füfzäh',
+                16: 'sächzäh', 17: 'sibzäh', 18: 'achtzäh', 19: 'nünzäh', 20: 'zwänzg',
+                21: 'einäzwänzg', 22: 'zwöiäzwänzg', 23: 'drüäzwänzg', 24: 'vieräzwänzg', 25: 'föifäzwänzg',
+                26: 'sächsäzwänzg', 27: 'sibäzwänzg', 28: 'achtäzwänzg', 29: 'nünäzwänzg', 30: 'drissig'
+            };
+            
+            // Dialekt-spezifische Anpassungen
+            const dialects = {
+                zuerich: {
+                    hourNames: {...hourNames},
+                    minuteNames: {...minuteNames},
+                    prefix: 's isch ',
+                    half: 'halbi ',
+                    quarter: 'viertel ',
+                    to: 'vor ',
+                    past: 'ab ',
+                    almost: 'gli ',
+                    minuteWord: 'Minute'
+                },
+                bern: {
+                    hourNames: {...hourNames, 1: 'eis', 3: 'drü'},
+                    minuteNames: {...minuteNames, 1: 'eis', 2: 'zwöi', 7: 'siebä'},
+                    prefix: 's isch ',
+                    half: 'haubi ',
+                    quarter: 'viertu ',
+                    to: 'vor ',
+                    past: 'ab ',
+                    almost: 'gli ',
+                    minuteWord: 'Minute'
+                },
+                basel: {
+                    hourNames: {...hourNames, 1: 'ais', 9: 'nyni'},
+                    minuteNames: {...minuteNames, 1: 'ais', 9: 'nyn', 19: 'nynzäh', 29: 'nynäzwanzig'},
+                    prefix: 's isch ',
+                    half: 'halbi ',
+                    quarter: 'viertel ',
+                    to: 'vor ',
+                    past: 'ab ',
+                    almost: 'glai ',
+                    minuteWord: 'Minuttä'
+                },
+                luzern: {
+                    hourNames: {...hourNames},
+                    minuteNames: {...minuteNames},
+                    prefix: 's esch ',
+                    half: 'halbi ',
+                    quarter: 'viertel ',
+                    to: 'vor ',
+                    past: 'ab ',
+                    almost: 'glei ',
+                    minuteWord: 'Minute'
+                },
+                stgallen: {
+                    hourNames: {...hourNames},
+                    minuteNames: {...minuteNames},
+                    prefix: 's isch ',
+                    half: 'halbi ',
+                    quarter: 'viertel ',
+                    to: 'vor ',
+                    past: 'ab ',
+                    almost: 'fast ',
+                    minuteWord: 'Minute'
+                },
+                wallis: {
+                    hourNames: {...hourNames, 1: 'eis', 3: 'dri'},
+                    minuteNames: {...minuteNames, 3: 'dri'},
+                    prefix: 's ischt ',
+                    half: 'halbi ',
+                    quarter: 'viertel ',
+                    to: 'vor ',
+                    past: 'ab ',
+                    almost: 'gli ',
+                    minuteWord: 'Minüta'
+                },
+                aargau: {
+                    hourNames: {...hourNames},
+                    minuteNames: {...minuteNames},
+                    prefix: 's esch ',
+                    half: 'halbi ',
+                    quarter: 'viertel ',
+                    to: 'vor ',
+                    past: 'ab ',
+                    almost: 'glei ',
+                    minuteWord: 'Minute'
+                },
+                thurgau: {
+                    hourNames: {...hourNames},
+                    minuteNames: {...minuteNames},
+                    prefix: 's isch ',
+                    half: 'halbi ',
+                    quarter: 'viertel ',
+                    to: 'vor ',
+                    past: 'naach ',
+                    almost: 'glii ',
+                    minuteWord: 'Minuute'
+                },
+                graubuenden: {
+                    hourNames: {...hourNames, 1: 'eis', 3: 'drii'},
+                    minuteNames: {...minuteNames, 1: 'eis', 3: 'drii'},
+                    prefix: 's isch ',
+                    half: 'halbi ',
+                    quarter: 'viertel ',
+                    to: 'vor ',
+                    past: 'nach ',
+                    almost: 'glich ',
+                    minuteWord: 'Minuta'
+                },
+                appenzell: {
+                    hourNames: {...hourNames},
+                    minuteNames: {...minuteNames},
+                    prefix: 's ischt ',
+                    half: 'halbi ',
+                    quarter: 'viertel ',
+                    to: 'vor ',
+                    past: 'noch ',
+                    almost: 'glii ',
+                    minuteWord: 'Minuute'
+                },
+                custom: {
+                    hourNames: JSON.parse(localStorage.getItem('customHourNames')) || {...hourNames},
+                    minuteNames: JSON.parse(localStorage.getItem('customMinuteNames')) || {...minuteNames},
+                    prefix: localStorage.getItem('customPrefix') || 's isch ',
+                    half: localStorage.getItem('customHalf') || 'halbi ',
+                    quarter: localStorage.getItem('customQuarter') || 'viertel ',
+                    to: localStorage.getItem('customTo') || 'vor ',
+                    past: localStorage.getItem('customPast') || 'ab ',
+                    almost: localStorage.getItem('customAlmost') || 'gli ',
+                    minuteWord: localStorage.getItem('customMinuteWord') || 'Minute'
+                }
+            };
+            
+            const dialectSettings = dialects[dialect] || dialects.zuerich;
+            
+            // Stunden anpassen (für 12-Stunden-Format)
+            let h = hours % 12;
+            if (h === 0) h = 12;
+            
+            // Nächste Stunde für "vor" Formulierungen
+            let nextHour = (h % 12) + 1;
+            
+            // Spezielle Zeiten
+            if (minutes === 0) {
+                return `${dialectSettings.prefix}${dialectSettings.hourNames[h]} Uhr`;
+            } else if (minutes === 30) {
+                return `${dialectSettings.prefix}${dialectSettings.half}${dialectSettings.hourNames[nextHour]}`;
+            } else if (minutes === 15) {
+                return `${dialectSettings.prefix}${dialectSettings.quarter}${dialectSettings.past}${dialectSettings.hourNames[h]}`;
+            } else if (minutes === 45) {
+                return `${dialectSettings.prefix}${dialectSettings.quarter}${dialectSettings.to}${dialectSettings.hourNames[nextHour]}`;
+            }
+            
+            // Minuten in Worten
+            let minuteText = '';
+            if (minutes <= 30) {
+                minuteText = dialectSettings.minuteNames[minutes] || minutes.toString();
+                return `${dialectSettings.prefix}${minuteText} ${dialectSettings.minuteWord} ${dialectSettings.past}${dialectSettings.hourNames[h]}`;
+            } else {
+                const minutesToNext = 60 - minutes;
+                minuteText = dialectSettings.minuteNames[minutesToNext] || minutesToNext.toString();
+                return `${dialectSettings.prefix}${minuteText} ${dialectSettings.minuteWord} ${dialectSettings.to}${dialectSettings.hourNames[nextHour]}`;
+            }
+        }
+        
+        // Sidebar Funktionen
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.overlay').style.display = 
+                document.querySelector('.sidebar').classList.contains('active') ? 'block' : 'none';
+        }
+        
+        // Account Funktionen
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Bitte E-Mail und Passwort eingeben.');
+                return;
+            }
+            
+            if (users[email] && users[email].password === password) {
+                currentUser = {
+                    email: email,
+                    settings: users[email].settings || {}
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateLoginUI();
+                loadUserSettings();
+                alert('Erfolgreich angemeldet!');
+            } else {
+                alert('Falsche E-Mail oder Passwort.');
+            }
+        }
+        
+        function register() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Bitte E-Mail und Passwort eingeben.');
+                return;
+            }
+            
+            if (users[email]) {
+                alert('Diese E-Mail ist bereits registriert.');
+                return;
+            }
+            
+            users[email] = {
+                password: password,
+                settings: {
+                    textColor: '#ffffff',
+                    bgColor: '#000000',
+                    dialect: selectedDialect,
+                    timezone: selectedTimezone
+                }
+            };
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            currentUser = {
+                email: email,
+                settings: users[email].settings
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            updateLoginUI();
+            loadUserSettings();
+            alert('Registrierung erfolgreich!');
+        }
+        
+        function logout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            updateLoginUI();
+            
+            // Zurücksetzen auf Standard-Einstellungen
+            document.getElementById('textColor').value = '#ffffff';
+            document.getElementById('bgColor').value = '#000000';
+            document.getElementById('dialect').value = 'zuerich';
+            document.getElementById('timezone').value = 'Europe/Zurich';
+            
+            selectedDialect = 'zuerich';
+            selectedTimezone = 'Europe/Zurich';
+            
+            changeColors();
+        }
+        
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateLoginUI();
+                loadUserSettings();
+            }
+        }
+        
+        function updateLoginUI() {
+            if (currentUser) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('loggedInInfo').style.display = 'block';
+                document.getElementById('userEmail').innerText = currentUser.email;
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('loggedInInfo').style.display = 'none';
+            }
+        }
+        
+        // Einstellungen und Speichern
+        function loadUserSettings() {
+            if (currentUser && currentUser.settings) {
+                const settings = currentUser.settings;
+                
+                if (settings.textColor) {
+                    document.getElementById('textColor').value = settings.textColor;
+                }
+                
+                if (settings.bgColor) {
+                    document.getElementById('bgColor').value = settings.bgColor;
+                }
+                
+                if (settings.dialect) {
+                    document.getElementById('dialect').value = settings.dialect;
+                    selectedDialect = settings.dialect;
+                }
+                
+                if (settings.timezone) {
+                    document.getElementById('timezone').value = settings.timezone;
+                    selectedTimezone = settings.timezone;
+                }
+                
+                changeColors();
+            }
+        }
+        
+        function loadSavedSettings() {
+            // Lade die zuletzt verwendeten Einstellungen für nicht angemeldete Benutzer
+            if (!currentUser) {
+                const savedSettings = localStorage.getItem('guestSettings');
+                if (savedSettings) {
+                    const settings = JSON.parse(savedSettings);
+                    
+                    if (settings.textColor) {
+                        document.getElementById('textColor').value = settings.textColor;
+                    }
+                    
+                    if (settings.bgColor) {
+                        document.getElementById('bgColor').value = settings.bgColor;
+                    }
+                    
+                    if (settings.dialect) {
+                        document.getElementById('dialect').value = settings.dialect;
+                        selectedDialect = settings.dialect;
+                    }
+                    
+                    if (settings.timezone) {
+                        document.getElementById('timezone').value = settings.timezone;
+                        selectedTimezone = settings.timezone;
+                    }
+                    
+                    changeColors();
+                }
+            }
+        }
+        
+        function changeColors() {
+            const textColor = document.getElementById('textColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+            
+            document.documentElement.style.setProperty('--text-color', textColor);
+            document.documentElement.style.setProperty('--bg-color', bgColor);
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Fehler beim Aktivieren des Vollbildmodus: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        
+        function changeDialect() {
+            selectedDialect = document.getElementById('dialect').value;
+            
+            // Zeige/Verstecke die benutzerdefinierten Dialekteinstellungen
+            if (selectedDialect === 'custom') {
+                document.getElementById('customDialectSettings').style.display = 'block';
+                // Erstelle Eingabefelder für die Stunden, falls noch nicht vorhanden
+                createCustomHourInputs();
+            } else {
+                document.getElementById('customDialectSettings').style.display = 'none';
+            }
+        }
+        
+        function createCustomHourInputs() {
+            const container = document.getElementById('customHourInputs');
+            if (container.children.length > 0) return; // Bereits erstellt
+            
+            // Lade gespeicherte benutzerdefinierte Stundennamen oder verwende Standard
+            const customHourNames = JSON.parse(localStorage.getItem('customHourNames')) || {
+                0: 'zwölfi', 1: 'eis', 2: 'zwei', 3: 'drü', 4: 'vieri', 
+                5: 'föifi', 6: 'sächsi', 7: 'sibni', 8: 'achti', 
+                9: 'nüni', 10: 'zähni', 11: 'elfi', 12: 'zwölfi'
+            };
+            
+            // Erstelle Eingabefelder für die Stunden
+            const hourDiv = document.createElement('div');
+            hourDiv.innerHTML = '<h5>Stunden</h5>';
+            container.appendChild(hourDiv);
+            
+            for (let i = 1; i <= 12; i++) {
+                const label = document.createElement('label');
+                label.setAttribute('for', `customHour${i}`);
+                label.textContent = `${i}:`;
+                
+                const input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('id', `customHour${i}`);
+                input.setAttribute('data-hour', i === 12 ? 0 : i);
+                input.value = customHourNames[i === 12 ? 0 : i];
+                
+                const div = document.createElement('div');
+                div.appendChild(label);
+                div.appendChild(input);
+                container.appendChild(div);
+            }
+            
+            // Minuten-Wort-Eingabe
+            const minuteWordDiv = document.createElement('div');
+            minuteWordDiv.innerHTML = '<h5>Minuten-Wort</h5>';
+            container.appendChild(minuteWordDiv);
+            
+            const minuteWordLabel = document.createElement('label');
+            minuteWordLabel.setAttribute('for', 'customMinuteWord');
+            minuteWordLabel.textContent = 'Wort für "Minute":';
+            
+            const minuteWordInput = document.createElement('input');
+            minuteWordInput.setAttribute('type', 'text');
+            minuteWordInput.setAttribute('id', 'customMinuteWord');
+            minuteWordInput.value = localStorage.getItem('customMinuteWord') || 'Minute';
+            
+            const minuteWordContainer = document.createElement('div');
+            minuteWordContainer.appendChild(minuteWordLabel);
+            minuteWordContainer.appendChild(minuteWordInput);
+            container.appendChild(minuteWordContainer);
+            
+            // Speichern-Button
+            const saveBtn = document.createElement('button');
+            saveBtn.textContent = 'Dialekteinstellungen speichern';
+            saveBtn.onclick = saveCustomDialect;
+            container.appendChild(saveBtn);
+        }
+        
+        function saveCustomDialect() {
+            // Speichere die benutzerdefinierten Einstellungen
+            const customPrefix = document.getElementById('customPrefix').value;
+            const customHalf = document.getElementById('customHalf').value;
+            const customQuarter = document.getElementById('customQuarter').value;
+            const customPast = document.getElementById('customPast').value;
+            const customTo = document.getElementById('customTo').value;
+            const customAlmost = document.getElementById('customAlmost').value;
+            const customMinuteWord = document.getElementById('customMinuteWord').value;
+            
+            localStorage.setItem('customPrefix', customPrefix);
+            localStorage.setItem('customHalf', customHalf);
+            localStorage.setItem('customQuarter', customQuarter);
+            localStorage.setItem('customPast', customPast);
+            localStorage.setItem('customTo', customTo);
+            localStorage.setItem('customAlmost', customAlmost);
+            localStorage.setItem('customMinuteWord', customMinuteWord);
+            
+            // Speichere die benutzerdefinierten Stundennamen
+            const customHourNames = {};
+            for (let i = 1; i <= 12; i++) {
+                const hourInput = document.getElementById(`customHour${i}`);
+                const hourKey = i === 12 ? 0 : i;
+                customHourNames[hourKey] = hourInput.value;
+            }
+            localStorage.setItem('customHourNames', JSON.stringify(customHourNames));
+            
+            // Erstelle einfache Minuten-Namen für den benutzerdefinierten Dialekt
+            // Dies könnte erweitert werden, um auch benutzerdefinierte Minutennamen zu unterstützen
+            const minuteNames = {
+                1: 'eis', 2: 'zwöi', 3: 'drü', 4: 'vier', 5: 'föif',
+                6: 'sächs', 7: 'sibä', 8: 'acht', 9: 'nün', 10: 'zäh',
+                11: 'elf', 12: 'zwölf', 13: 'drizäh', 14: 'vierzäh', 15: 'füfzäh',
+                16: 'sächzäh', 17: 'sibzäh', 18: 'achtzäh', 19: 'nünzäh', 20: 'zwänzg',
+                21: 'einäzwänzg', 22: 'zwöiäzwänzg', 23: 'drüäzwänzg', 24: 'vieräzwänzg', 25: 'föifäzwänzg',
+                26: 'sächsäzwänzg', 27: 'sibäzwänzg', 28: 'achtäzwänzg', 29: 'nünäzwänzg', 30: 'drissig'
+            };
+            localStorage.setItem('customMinuteNames', JSON.stringify(minuteNames));
+            
+            alert('Benutzerdefinierte Dialekteinstellungen gespeichert');
+        }
+        
+        function changeTimezone() {
+            selectedTimezone = document.getElementById('timezone').value;
+        }
+        
+        function saveSettings() {
+            const textColor = document.getElementById('textColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+            
+            if (currentUser) {
+                // Speichere für angemeldeten Benutzer
+                currentUser.settings = {
+                    textColor: textColor,
+                    bgColor: bgColor,
+                    dialect: selectedDialect,
+                    timezone: selectedTimezone
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Aktualisiere im Benutzerobjekt
+                users[currentUser.email].settings = currentUser.settings;
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                alert('Einstellungen gespeichert!');
+            } else {
+                // Speichere für Gast-Modus
+                const guestSettings = {
+                    textColor: textColor,
+                    bgColor: bgColor,
+                    dialect: selectedDialect,
+                    timezone: selectedTimezone
+                };
+                
+                localStorage.setItem('guestSettings', JSON.stringify(guestSettings));
+                alert('Einstellungen temporär gespeichert. Für dauerhafte Speicherung bitte anmelden.');
+            }
+        }
+        
+        // Initialisieren
+        window.onload = init;
+    </script>
+</body>
+</html>
