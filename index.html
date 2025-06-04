@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>Add commentMore actions
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -61,9 +61,9 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -350px; /* Erhöht für mehr Platz */
+            left: -300px;
             height: 100%;
-            width: 350px; /* Erhöht für mehr Platz */
+            width: 300px;
             background-color: #333;
             transition: 0.3s;
             padding: 20px;
@@ -165,69 +165,6 @@
             display: none;
             z-index: 50;
         }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .tabs {
-            display: flex;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #555;
-        }
-        
-        .tab {
-            padding: 8px 15px;
-            cursor: pointer;
-            background-color: #444;
-            border: none; 
-            color: white;
-            margin-right: 5px;
-        }
-        
-        .tab.active {
-            background-color: #666;
-        }
-        
-        /* Dialekt-Liste Style */
-        .dialect-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            border: 1px solid #555;
-        }
-        
-        .dialect-item {
-            padding: 8px;
-            cursor: pointer;
-            border-bottom: 1px solid #555;
-        }
-        
-        .dialect-item:hover {
-            background-color: #444;
-        }
-        
-        .dialect-item.active {
-            background-color: #666;
-        }
-        
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-        
-        .reset-btn {
-            background-color: #aa5555;
-        }
-        
-        .reset-btn:hover {
-            background-color: #cc6666;
-        }
     </style>
 </head>
 <body>
@@ -277,147 +214,64 @@
             <h3>Zeitzone</h3>
             <label for="timezone">Zeitzone wählen:</label>
             <select id="timezone">
-                <!-- Europäische Zeitzonen -->
-                <optgroup label="Europa">
-                    <option value="Europe/Zurich">Schweiz (Zürich)</option>
-                    <option value="Europe/Berlin">Deutschland (Berlin)</option>
-                    <option value="Europe/Vienna">Österreich (Wien)</option>
-                    <option value="Europe/Paris">Frankreich (Paris)</option>
-                    <option value="Europe/London">UK (London)</option>
-                    <option value="Europe/Rome">Italien (Rom)</option>
-                    <option value="Europe/Madrid">Spanien (Madrid)</option>
-                    <option value="Europe/Amsterdam">Niederlande (Amsterdam)</option>
-                    <option value="Europe/Brussels">Belgien (Brüssel)</option>
-                    <option value="Europe/Copenhagen">Dänemark (Kopenhagen)</option>
-                    <option value="Europe/Stockholm">Schweden (Stockholm)</option>
-                    <option value="Europe/Oslo">Norwegen (Oslo)</option>
-                    <option value="Europe/Helsinki">Finnland (Helsinki)</option>
-                    <option value="Europe/Athens">Griechenland (Athen)</option>
-                    <option value="Europe/Warsaw">Polen (Warschau)</option>
-                    <option value="Europe/Prague">Tschechien (Prag)</option>
-                </optgroup>
-                <!-- Amerikanische Zeitzonen -->
-                <optgroup label="Amerika">
-                    <option value="America/New_York">USA Ostküste (New York)</option>
-                    <option value="America/Chicago">USA Zentral (Chicago)</option>
-                    <option value="America/Denver">USA Mountain (Denver)</option>
-                    <option value="America/Los_Angeles">USA Westküste (Los Angeles)</option>
-                    <option value="America/Anchorage">USA Alaska (Anchorage)</option>
-                    <option value="Pacific/Honolulu">USA Hawaii (Honolulu)</option>
-                    <option value="America/Toronto">Kanada (Toronto)</option>
-                    <option value="America/Vancouver">Kanada (Vancouver)</option>
-                    <option value="America/Mexico_City">Mexiko (Mexiko-Stadt)</option>
-                    <option value="America/Sao_Paulo">Brasilien (São Paulo)</option>
-                    <option value="America/Argentina/Buenos_Aires">Argentinien (Buenos Aires)</option>
-                </optgroup>
-                <!-- Asiatische Zeitzonen -->
-                <optgroup label="Asien">
-                    <option value="Asia/Tokyo">Japan (Tokyo)</option>
-                    <option value="Asia/Shanghai">China (Shanghai)</option>
-                    <option value="Asia/Hong_Kong">Hong Kong</option>
-                    <option value="Asia/Singapore">Singapur</option>
-                    <option value="Asia/Seoul">Südkorea (Seoul)</option>
-                    <option value="Asia/Bangkok">Thailand (Bangkok)</option>
-                    <option value="Asia/Kolkata">Indien (Mumbai)</option>
-                    <option value="Asia/Dubai">VAE (Dubai)</option>
-                    <option value="Asia/Jerusalem">Israel (Jerusalem)</option>
-                </optgroup>
-                <!-- Andere Zeitzonen -->
-                <optgroup label="Pazifik/Ozeanien">
-                    <option value="Australia/Sydney">Australien (Sydney)</option>
-                    <option value="Australia/Perth">Australien (Perth)</option>
-                    <option value="Pacific/Auckland">Neuseeland (Auckland)</option>
-                    <option value="Pacific/Fiji">Fidschi</option>
-                </optgroup>
-                <optgroup label="Afrika">
-                    <option value="Africa/Cairo">Ägypten (Kairo)</option>
-                    <option value="Africa/Johannesburg">Südafrika (Johannesburg)</option>
-                    <option value="Africa/Nairobi">Kenia (Nairobi)</option>
-                    <option value="Africa/Lagos">Nigeria (Lagos)</option>
-                </optgroup>
+                <option value="Europe/Zurich">Schweiz (Zürich)</option>
+                <option value="Europe/Berlin">Deutschland (Berlin)</option>
+                <option value="Europe/Vienna">Österreich (Wien)</option>
+                <option value="Europe/Paris">Frankreich (Paris)</option>
+                <option value="Europe/London">UK (London)</option>
+                <option value="America/New_York">USA (New York)</option>
+                <option value="America/Los_Angeles">USA (Los Angeles)</option>
+                <option value="Asia/Tokyo">Japan (Tokyo)</option>
+                <option value="Australia/Sydney">Australien (Sydney)</option>
             </select>
             <button onclick="changeTimezone()">Zeitzone übernehmen</button>
         </div>
         
         <div class="form-group">
             <h3>Dialekt</h3>
-            <div class="tabs">
-                <button class="tab active" onclick="showTab('standardTab')">Standard</button>
-                <button class="tab" onclick="showTab('customTab')">Eigene Dialekte</button>
+            <label for="dialect">Schweizerdeutschen Dialekt wählen:</label>
+            <select id="dialect">
+                <option value="zuerich">Zürich</option>
+                <option value="bern">Bern</option>
+                <option value="basel">Basel</option>
+                <option value="luzern">Luzern</option>
+                <option value="stgallen">St. Gallen</option>
+                <option value="wallis">Wallis</option>
+                <option value="aargau">Aargau</option>
+                <option value="thurgau">Thurgau</option>
+                <option value="graubuenden">Graubünden</option>
+                <option value="appenzell">Appenzell</option>
+                <option value="custom">Eigener Dialekt</option>
+            </select>
+            
+            <div id="customDialectSettings" style="display: none; margin-top: 15px;">
+                <h4>Eigenen Dialekt bearbeiten</h4>
+                <label for="customPrefix">Uhrzeitpräfix (z.B. "s isch "):</label>
+                <input type="text" id="customPrefix" value="s isch ">
+                
+                <label for="customHalf">Halb (z.B. "halbi "):</label>
+                <input type="text" id="customHalf" value="halbi ">
+                
+                <label for="customQuarter">Viertel (z.B. "viertel "):</label>
+                <input type="text" id="customQuarter" value="viertel ">
+                
+                <label for="customPast">Nach (z.B. "ab "):</label>
+                <input type="text" id="customPast" value="ab ">
+                
+                <label for="customTo">Vor (z.B. "vor "):</label>
+                <input type="text" id="customTo" value="vor ">
+                
+                <label for="customAlmost">Fast/Gleich (z.B. "gli "):</label>
+                <input type="text" id="customAlmost" value="gli ">
+                
+                <h4>Zahlen anpassen</h4>
+                <div id="customHourInputs"></div>
             </div>
             
-            <div id="standardTab" class="tab-content active">
-                <label for="dialect">Schweizerdeutschen Dialekt wählen:</label>
-                <select id="dialect">
-                    <option value="zuerich">Zürich</option>
-                    <option value="bern">Bern</option>
-                    <option value="basel">Basel</option>
-                    <option value="luzern">Luzern</option>
-                    <option value="stgallen">St. Gallen</option>
-                    <option value="wallis">Wallis</option>
-                    <option value="aargau">Aargau</option>
-                    <option value="thurgau">Thurgau</option>
-                    <option value="graubuenden">Graubünden</option>
-                    <option value="appenzell">Appenzell</option>
-                </select>
-                <button onclick="changeDialect()">Dialekt übernehmen</button>
-            </div>
-            
-            <div id="customTab" class="tab-content">
-                <h4>Eigene Dialekte</h4>
-                <div class="dialect-list" id="customDialectList">
-                    <!-- Dialektliste wird dynamisch befüllt -->
-                </div>
-                
-                <div class="action-buttons">
-                    <button onclick="createNewCustomDialect()">Neuer Dialekt</button>
-                    <button onclick="editSelectedCustomDialect()">Bearbeiten</button>
-                    <button onclick="deleteSelectedCustomDialect()">Löschen</button>
-                </div>
-                
-                <div id="customDialectEditor" style="display: none; margin-top: 20px;">
-                    <h4>Dialekt bearbeiten</h4>
-                    <label for="customDialectName">Name des Dialekts:</label>
-                    <input type="text" id="customDialectName" placeholder="z.B. 'Mein Dialekt'">
-                    
-                    <h5>Grundeinstellungen</h5>
-                    <label for="customPrefix">Uhrzeitpräfix (z.B. "s isch "):</label>
-                    <input type="text" id="customPrefix" value="s isch ">
-                    
-                    <label for="customHalf">Halb (z.B. "halbi "):</label>
-                    <input type="text" id="customHalf" value="halbi ">
-                    
-                    <label for="customQuarter">Viertel (z.B. "viertel "):</label>
-                    <input type="text" id="customQuarter" value="viertel ">
-                    
-                    <label for="customPast">Nach (z.B. "ab "):</label>
-                    <input type="text" id="customPast" value="ab ">
-                    
-                    <label for="customTo">Vor (z.B. "vor "):</label>
-                    <input type="text" id="customTo" value="vor ">
-                    
-                    <label for="customAlmost">Fast/Gleich (z.B. "gli "):</label>
-                    <input type="text" id="customAlmost" value="gli ">
-                    
-                    <label for="customMinuteWord">Wort für "Minute":</label>
-                    <input type="text" id="customMinuteWord" value="Minute">
-                    
-                    <div id="customHourInputs"></div>
-                    
-                    <div id="customMinuteInputs"></div>
-                    
-                    <div class="action-buttons">
-                        <button onclick="saveCustomDialect()">Speichern</button>
-                        <button onclick="hideCustomDialectEditor()">Abbrechen</button>
-                    </div>
-                </div>
-            </div>
+            <button onclick="changeDialect()">Dialekt übernehmen</button>
         </div>
         
-        <div class="action-buttons">
-            <button onclick="saveSettings()">Alle Einstellungen speichern</button>
-            <button onclick="resetSettings()" class="reset-btn">Zurücksetzen</button>
-        </div>
+        <button onclick="saveSettings()">Alle Einstellungen speichern</button>
     </div>
     
     <div class="clock-container">
@@ -433,81 +287,54 @@
         let selectedDialect = "zuerich";
         let selectedTimezone = "Europe/Zurich";
         let users = JSON.parse(localStorage.getItem('users')) || {};
-        let customDialects = JSON.parse(localStorage.getItem('customDialects')) || {};
-        let currentCustomDialect = null;
-        let isEditing = false;
         
         // Initialisierung
         function init() {
             checkLoginStatus();
             loadSavedSettings();
-            loadCustomDialects();
             updateClock();
             setInterval(updateClock, 1000);
             
-            // Event-Listener für Tab-Wechsel
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                });
+            // Event-Listener für Dialekt-Änderungen
+            document.getElementById('dialect').addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    document.getElementById('customDialectSettings').style.display = 'block';
+                    createCustomHourInputs();
+                } else {
+                    document.getElementById('customDialectSettings').style.display = 'none';
+                }
             });
-        }
-        
-        // Tab-Funktionen
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.getElementById(tabId).classList.add('active');
+        }function init() {
+            checkLoginStatus();
+            loadSavedSettings();
+            updateClock();
+            setInterval(updateClock, 1000);
         }
         
         // Uhr-Funktionen
         function updateClock() {
-            try {
-                const now = new Date();
-                
-                // Konvertiere in die ausgewählte Zeitzone
-                const options = { 
-                    timeZone: selectedTimezone, 
-                    hour: '2-digit', 
-                    minute: '2-digit', 
-                    hour12: false 
-                };
-                
-                let hours, minutes;
-                
-                try {
-                    // Versuche die Zeit mit der gewählten Zeitzone zu formatieren
-                    const timeStr = now.toLocaleTimeString('de-CH', options);
-                    const timeParts = timeStr.split(':');
-                    hours = parseInt(timeParts[0], 10);
-                    minutes = parseInt(timeParts[1], 10);
-                } catch (e) {
-                    // Fallback bei Fehlern mit der Zeitzone
-                    console.error("Fehler bei der Zeitzonenkonvertierung:", e);
-                    hours = now.getHours();
-                    minutes = now.getMinutes();
-                }
-                
-                const seconds = now.getSeconds();
-                
-                // Sekundenzeiger aktualisieren
-                const secondsAngle = seconds * 6; // 360 Grad / 60 Sekunden = 6 Grad pro Sekunde
-                const radius = 220; // Radius des Kreises
-                
-                const x = radius * Math.sin(secondsAngle * Math.PI / 180);
-                const y = -radius * Math.cos(secondsAngle * Math.PI / 180);
-                
-                document.getElementById('secondHand').style.transform = `translate(${x}px, ${y}px)`;
-                
-                // Text auf Schweizerdeutsch aktualisieren
-                const swissGermanTime = convertToSwissGerman(hours, minutes, selectedDialect);
-                document.getElementById('timeText').innerText = swissGermanTime;
-            } catch (error) {
-                console.error("Fehler in updateClock:", error);
-                document.getElementById('timeText').innerText = "Fehler bei der Uhrzeitanzeige";
-            }
+            const now = new Date();
+            
+            // Konvertiere in die ausgewählte Zeitzone
+            const options = { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', hour12: false };
+            const timeStr = now.toLocaleTimeString('de-CH', options);
+            
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            // Sekundenzeiger aktualisieren
+            const secondsAngle = seconds * 6; // 360 Grad / 60 Sekunden = 6 Grad pro Sekunde
+            const radius = 220; // Radius des Kreises
+            
+            const x = radius * Math.sin(secondsAngle * Math.PI / 180);
+            const y = -radius * Math.cos(secondsAngle * Math.PI / 180);
+            
+            document.getElementById('secondHand').style.transform = `translate(${x}px, ${y}px)`;
+            
+            // Text auf Schweizerdeutsch aktualisieren
+            const swissGermanTime = convertToSwissGerman(hours, minutes, selectedDialect);
+            document.getElementById('timeText').innerText = swissGermanTime;
         }
         
         // Schweizerdeutsche Zeit-Konvertierungen für verschiedene Dialekte
@@ -640,13 +467,19 @@
                     past: 'noch ',
                     almost: 'glii ',
                     minuteWord: 'Minuute'
+                },
+                custom: {
+                    hourNames: JSON.parse(localStorage.getItem('customHourNames')) || {...hourNames},
+                    minuteNames: JSON.parse(localStorage.getItem('customMinuteNames')) || {...minuteNames},
+                    prefix: localStorage.getItem('customPrefix') || 's isch ',
+                    half: localStorage.getItem('customHalf') || 'halbi ',
+                    quarter: localStorage.getItem('customQuarter') || 'viertel ',
+                    to: localStorage.getItem('customTo') || 'vor ',
+                    past: localStorage.getItem('customPast') || 'ab ',
+                    almost: localStorage.getItem('customAlmost') || 'gli ',
+                    minuteWord: localStorage.getItem('customMinuteWord') || 'Minute'
                 }
             };
-            
-            // Eigene Dialekte hinzufügen
-            Object.keys(customDialects).forEach(key => {
-                dialects[key] = customDialects[key];
-            });
             
             const dialectSettings = dialects[dialect] || dialects.zuerich;
             
@@ -729,4 +562,294 @@
             users[email] = {
                 password: password,
                 settings: {
-                    textColor: '#
+                    textColor: '#ffffff',
+                    bgColor: '#000000',
+                    dialect: selectedDialect,
+                    timezone: selectedTimezone
+                }
+            };
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            currentUser = {
+                email: email,
+                settings: users[email].settings
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            updateLoginUI();
+            loadUserSettings();
+            alert('Registrierung erfolgreich!');
+        }
+        
+        function logout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            updateLoginUI();
+            
+            // Zurücksetzen auf Standard-Einstellungen
+            document.getElementById('textColor').value = '#ffffff';
+            document.getElementById('bgColor').value = '#000000';
+            document.getElementById('dialect').value = 'zuerich';
+            document.getElementById('timezone').value = 'Europe/Zurich';
+            
+            selectedDialect = 'zuerich';
+            selectedTimezone = 'Europe/Zurich';
+            
+            changeColors();
+        }
+        
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateLoginUI();
+                loadUserSettings();
+            }
+        }
+        
+        function updateLoginUI() {
+            if (currentUser) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('loggedInInfo').style.display = 'block';
+                document.getElementById('userEmail').innerText = currentUser.email;
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('loggedInInfo').style.display = 'none';
+            }
+        }
+        
+        // Einstellungen und Speichern
+        function loadUserSettings() {
+            if (currentUser && currentUser.settings) {
+                const settings = currentUser.settings;
+                
+                if (settings.textColor) {
+                    document.getElementById('textColor').value = settings.textColor;
+                }
+                
+                if (settings.bgColor) {
+                    document.getElementById('bgColor').value = settings.bgColor;
+                }
+                
+                if (settings.dialect) {
+                    document.getElementById('dialect').value = settings.dialect;
+                    selectedDialect = settings.dialect;
+                }
+                
+                if (settings.timezone) {
+                    document.getElementById('timezone').value = settings.timezone;
+                    selectedTimezone = settings.timezone;
+                }
+                
+                changeColors();
+            }
+        }
+        
+        function loadSavedSettings() {
+            // Lade die zuletzt verwendeten Einstellungen für nicht angemeldete Benutzer
+            if (!currentUser) {
+                const savedSettings = localStorage.getItem('guestSettings');
+                if (savedSettings) {
+                    const settings = JSON.parse(savedSettings);
+                    
+                    if (settings.textColor) {
+                        document.getElementById('textColor').value = settings.textColor;
+                    }
+                    
+                    if (settings.bgColor) {
+                        document.getElementById('bgColor').value = settings.bgColor;
+                    }
+                    
+                    if (settings.dialect) {
+                        document.getElementById('dialect').value = settings.dialect;
+                        selectedDialect = settings.dialect;
+                    }
+                    
+                    if (settings.timezone) {
+                        document.getElementById('timezone').value = settings.timezone;
+                        selectedTimezone = settings.timezone;
+                    }
+                    
+                    changeColors();
+                }
+            }
+        }
+        
+        function changeColors() {
+            const textColor = document.getElementById('textColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+            
+            document.documentElement.style.setProperty('--text-color', textColor);
+            document.documentElement.style.setProperty('--bg-color', bgColor);
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Fehler beim Aktivieren des Vollbildmodus: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        
+        function changeDialect() {
+            selectedDialect = document.getElementById('dialect').value;
+            
+            // Zeige/Verstecke die benutzerdefinierten Dialekteinstellungen
+            if (selectedDialect === 'custom') {
+                document.getElementById('customDialectSettings').style.display = 'block';
+                // Erstelle Eingabefelder für die Stunden, falls noch nicht vorhanden
+                createCustomHourInputs();
+            } else {
+                document.getElementById('customDialectSettings').style.display = 'none';
+            }
+        }
+        
+        function createCustomHourInputs() {
+            const container = document.getElementById('customHourInputs');
+            if (container.children.length > 0) return; // Bereits erstellt
+            
+            // Lade gespeicherte benutzerdefinierte Stundennamen oder verwende Standard
+            const customHourNames = JSON.parse(localStorage.getItem('customHourNames')) || {
+                0: 'zwölfi', 1: 'eis', 2: 'zwei', 3: 'drü', 4: 'vieri', 
+                5: 'föifi', 6: 'sächsi', 7: 'sibni', 8: 'achti', 
+                9: 'nüni', 10: 'zähni', 11: 'elfi', 12: 'zwölfi'
+            };
+            
+            // Erstelle Eingabefelder für die Stunden
+            const hourDiv = document.createElement('div');
+            hourDiv.innerHTML = '<h5>Stunden</h5>';
+            container.appendChild(hourDiv);
+            
+            for (let i = 1; i <= 12; i++) {
+                const label = document.createElement('label');
+                label.setAttribute('for', `customHour${i}`);
+                label.textContent = `${i}:`;
+                
+                const input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('id', `customHour${i}`);
+                input.setAttribute('data-hour', i === 12 ? 0 : i);
+                input.value = customHourNames[i === 12 ? 0 : i];
+                
+                const div = document.createElement('div');
+                div.appendChild(label);
+                div.appendChild(input);
+                container.appendChild(div);
+            }
+            
+            // Minuten-Wort-Eingabe
+            const minuteWordDiv = document.createElement('div');
+            minuteWordDiv.innerHTML = '<h5>Minuten-Wort</h5>';
+            container.appendChild(minuteWordDiv);
+            
+            const minuteWordLabel = document.createElement('label');
+            minuteWordLabel.setAttribute('for', 'customMinuteWord');
+            minuteWordLabel.textContent = 'Wort für "Minute":';
+            
+            const minuteWordInput = document.createElement('input');
+            minuteWordInput.setAttribute('type', 'text');
+            minuteWordInput.setAttribute('id', 'customMinuteWord');
+            minuteWordInput.value = localStorage.getItem('customMinuteWord') || 'Minute';
+            
+            const minuteWordContainer = document.createElement('div');
+            minuteWordContainer.appendChild(minuteWordLabel);
+            minuteWordContainer.appendChild(minuteWordInput);
+            container.appendChild(minuteWordContainer);
+            
+            // Speichern-Button
+            const saveBtn = document.createElement('button');
+            saveBtn.textContent = 'Dialekteinstellungen speichern';
+            saveBtn.onclick = saveCustomDialect;
+            container.appendChild(saveBtn);
+        }
+        
+        function saveCustomDialect() {
+            // Speichere die benutzerdefinierten Einstellungen
+            const customPrefix = document.getElementById('customPrefix').value;
+            const customHalf = document.getElementById('customHalf').value;
+            const customQuarter = document.getElementById('customQuarter').value;
+            const customPast = document.getElementById('customPast').value;
+            const customTo = document.getElementById('customTo').value;
+            const customAlmost = document.getElementById('customAlmost').value;
+            const customMinuteWord = document.getElementById('customMinuteWord').value;
+            
+            localStorage.setItem('customPrefix', customPrefix);
+            localStorage.setItem('customHalf', customHalf);
+            localStorage.setItem('customQuarter', customQuarter);
+            localStorage.setItem('customPast', customPast);
+            localStorage.setItem('customTo', customTo);
+            localStorage.setItem('customAlmost', customAlmost);
+            localStorage.setItem('customMinuteWord', customMinuteWord);
+            
+            // Speichere die benutzerdefinierten Stundennamen
+            const customHourNames = {};
+            for (let i = 1; i <= 12; i++) {
+                const hourInput = document.getElementById(`customHour${i}`);
+                const hourKey = i === 12 ? 0 : i;
+                customHourNames[hourKey] = hourInput.value;
+            }
+            localStorage.setItem('customHourNames', JSON.stringify(customHourNames));
+            
+            // Erstelle einfache Minuten-Namen für den benutzerdefinierten Dialekt
+            // Dies könnte erweitert werden, um auch benutzerdefinierte Minutennamen zu unterstützen
+            const minuteNames = {
+                1: 'eis', 2: 'zwöi', 3: 'drü', 4: 'vier', 5: 'föif',
+                6: 'sächs', 7: 'sibä', 8: 'acht', 9: 'nün', 10: 'zäh',
+                11: 'elf', 12: 'zwölf', 13: 'drizäh', 14: 'vierzäh', 15: 'füfzäh',
+                16: 'sächzäh', 17: 'sibzäh', 18: 'achtzäh', 19: 'nünzäh', 20: 'zwänzg',
+                21: 'einäzwänzg', 22: 'zwöiäzwänzg', 23: 'drüäzwänzg', 24: 'vieräzwänzg', 25: 'föifäzwänzg',
+                26: 'sächsäzwänzg', 27: 'sibäzwänzg', 28: 'achtäzwänzg', 29: 'nünäzwänzg', 30: 'drissig'
+            };
+            localStorage.setItem('customMinuteNames', JSON.stringify(minuteNames));
+            
+            alert('Benutzerdefinierte Dialekteinstellungen gespeichert');
+        }
+        
+        function changeTimezone() {
+            selectedTimezone = document.getElementById('timezone').value;
+        }
+        
+        function saveSettings() {
+            const textColor = document.getElementById('textColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+            
+            if (currentUser) {
+                // Speichere für angemeldeten Benutzer
+                currentUser.settings = {
+                    textColor: textColor,
+                    bgColor: bgColor,
+                    dialect: selectedDialect,
+                    timezone: selectedTimezone
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Aktualisiere im Benutzerobjekt
+                users[currentUser.email].settings = currentUser.settings;
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                alert('Einstellungen gespeichert!');
+            } else {
+                // Speichere für Gast-Modus
+                const guestSettings = {
+                    textColor: textColor,
+                    bgColor: bgColor,
+                    dialect: selectedDialect,
+                    timezone: selectedTimezone
+                };
+                
+                localStorage.setItem('guestSettings', JSON.stringify(guestSettings));
+                alert('Einstellungen temporär gespeichert. Für dauerhafte Speicherung bitte anmelden.');
+            }
+        }
+        
+        // Initialisieren
+        window.onload = init;
+    </script>
+</body>
+</html>
