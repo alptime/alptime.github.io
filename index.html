@@ -493,7 +493,7 @@
             
             // Spezielle Zeiten
             if (minutes === 0) {
-                return `${dialectSettings.prefix}${dialectSettings.hourNames[h]} Uhr`;
+                return `${dialectSettings.prefix}${dialectSettings.hourNames[h]} `;
             } else if (minutes === 30) {
                 return `${dialectSettings.prefix}${dialectSettings.half}${dialectSettings.hourNames[nextHour]}`;
             } else if (minutes === 15) {
