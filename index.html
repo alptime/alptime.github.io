@@ -1,4 +1,4 @@
-<!DOCTYPE html>Add commentMore actions
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -11,6 +11,7 @@
         }
         
         body {
+            position: fixed
             margin: 0;
             padding: 0;
             font-family: 'Helvetica', sans-serif;
@@ -31,6 +32,9 @@
         }
         
         .menu-icon {
+            position: absolute;   /* absolut im Bezug auf den Header */
+            top: 20px;            /* Abstand vom oberen Rand */
+            left: 20px;
             cursor: pointer;
             width: 30px;
             height: 20px;
@@ -40,12 +44,15 @@
         }
         
         .fullscreen-btn {
+            position: absolute;   /* absolut im Bezug auf den Header */
+            top: -30px;            /* Abstand vom oberen Rand */
+            right: -10px;
             background: none;
             border: none;
             color: var(--text-color);
             font-size: 24px;
             cursor: pointer;
-            padding: 5px;
+            padding: 20px;
         }
         
         .fullscreen-icon {
@@ -62,14 +69,16 @@
             position: fixed;
             top: 0;
             left: -300px;
-            height: 95%;
+            bottom: 0;          /* statt height */
             width: 300px;
             background-color: #333;
             transition: 0.5s;
             padding: 0px;
             z-index: 100;
             overflow-y: auto;
+            box-sizing: border-box;
         }
+
         
         .sidebar.active {
             left: 0;
@@ -81,7 +90,7 @@
             font-size: 24px;
             cursor: pointer;
             text-align: right;
-            margin-bottom: 20px;
+            margin-bottom: -47px;
         }
         
         .clock-container {
@@ -216,9 +225,6 @@
             <label for="timezone">Zeitzone wählen:</label>
             <select id="timezone">
                 <option value="Europe/Zurich">Schweiz (Zürich)</option>
-                <option value="Europe/Berlin">Deutschland (Berlin)</option>
-                <option value="Europe/Vienna">Österreich (Wien)</option>
-                <option value="Europe/Paris">Frankreich (Paris)</option>
                 <option value="Europe/London">UK (London)</option>
                 <option value="America/New_York">USA (New York)</option>
                 <option value="America/Los_Angeles">USA (Los Angeles)</option>
@@ -317,12 +323,13 @@
             const now = new Date();
             
             // Konvertiere in die ausgewählte Zeitzone
-            const options = { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', hour12: false };
-            const timeStr = now.toLocaleTimeString('de-CH', options);
+            const options = { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const formatter = new Intl.DateTimeFormat('de-CH', options);
+            const parts = formatter.formatToParts(now);
             
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
+            let hours = parseInt(parts.find(p => p.type === 'hour').value, 10);
+            let minutes = parseInt(parts.find(p => p.type === 'minute').value, 10);
+            let seconds = parseInt(parts.find(p => p.type === 'second').value, 10);
             
             // Sekundenzeiger aktualisieren
             const secondsAngle = seconds * 6; // 360 Grad / 60 Sekunden = 6 Grad pro Sekunde
