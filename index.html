@@ -703,15 +703,16 @@
                 }
             }
         }
-        
+                
         function changeDialect() {
             selectedDialect = document.getElementById('dialect').value;
             
             // Zeige/Verstecke die benutzerdefinierten Dialekteinstellungen
             if (selectedDialect === 'custom') {
                 document.getElementById('customDialectSettings').style.display = 'block';
-                // Erstelle Eingabefelder für die Stunden, falls noch nicht vorhanden
+                // Erstelle Eingabefelder für die Stunden und Minuten, falls noch nicht vorhanden
                 createCustomHourInputs();
+                createCustomMinuteInputs();
             } else {
                 document.getElementById('customDialectSettings').style.display = 'none';
             }
@@ -750,30 +751,83 @@
                 container.appendChild(div);
             }
             
-            // Minuten-Wort-Eingabe
-            const minuteWordDiv = document.createElement('div');
-            minuteWordDiv.innerHTML = '<h5>Minuten-Wort</h5>';
-            container.appendChild(minuteWordDiv);
+            // Kein Speichern-Button hier - wird am Ende hinzugefügt
+        }
+        
+        function createCustomMinuteInputs() {
+            const container = document.getElementById('customMinuteInputs');
+            if (!container) {
+                // Falls der Container nicht existiert, erstelle ihn
+                const newContainer = document.createElement('div');
+                newContainer.setAttribute('id', 'customMinuteInputs');
+                document.getElementById('customDialectSettings').appendChild(newContainer);
+            }
             
-            const minuteWordLabel = document.createElement('label');
-            minuteWordLabel.setAttribute('for', 'customMinuteWord');
-            minuteWordLabel.textContent = 'Wort für "Minute":';
+            const minuteContainer = document.getElementById('customMinuteInputs');
+            if (minuteContainer.children.length > 0) return; // Bereits erstellt
             
-            const minuteWordInput = document.createElement('input');
-            minuteWordInput.setAttribute('type', 'text');
-            minuteWordInput.setAttribute('id', 'customMinuteWord');
-            minuteWordInput.value = localStorage.getItem('customMinuteWord') || 'Minute';
+            // Lade gespeicherte benutzerdefinierte Minutennamen oder verwende Standard
+            const customMinuteNames = JSON.parse(localStorage.getItem('customMinuteNames')) || {
+                1: 'eis', 2: 'zwöi', 3: 'drü', 4: 'vier', 5: 'föif',
+                6: 'sächs', 7: 'sibä', 8: 'acht', 9: 'nün', 10: 'zäh',
+                11: 'elf', 12: 'zwölf', 13: 'drizäh', 14: 'vierzäh', 15: 'füfzäh',
+                16: 'sächzäh', 17: 'sibzäh', 18: 'achtzäh', 19: 'nünzäh', 20: 'zwänzg',
+                21: 'einäzwänzg', 22: 'zwöiäzwänzg', 23: 'drüäzwänzg', 24: 'vieräzwänzg', 25: 'föifäzwänzg',
+                26: 'sächsäzwänzg', 27: 'sibäzwänzg', 28: 'achtäzwänzg', 29: 'nünäzwänzg', 30: 'drissig'
+            };
             
-            const minuteWordContainer = document.createElement('div');
-            minuteWordContainer.appendChild(minuteWordLabel);
-            minuteWordContainer.appendChild(minuteWordInput);
-            container.appendChild(minuteWordContainer);
+            // Erstelle Eingabefelder für die Minuten
+            const minuteDiv = document.createElement('div');
+            minuteDiv.innerHTML = '<h5>Minuten (1-30)</h5>';
+            minuteContainer.appendChild(minuteDiv);
             
-            // Speichern-Button
+            // Erstelle ein Grid-Layout für bessere Übersichtlichkeit
+            const gridDiv = document.createElement('div');
+            gridDiv.style.display = 'grid';
+            gridDiv.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            gridDiv.style.gap = '10px';
+            gridDiv.style.marginBottom = '15px';
+            
+            for (let i = 1; i <= 30; i++) {
+                const label = document.createElement('label');
+                label.setAttribute('for', `customMinute${i}`);
+                label.textContent = `${i}:`;
+                label.style.fontSize = '0.9em';
+                
+                const input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('id', `customMinute${i}`);
+                input.setAttribute('data-minute', i);
+                input.value = customMinuteNames[i] || i.toString();
+                input.style.fontSize = '0.9em';
+                input.style.padding = '3px';
+                
+                const div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.gap = '5px';
+                div.appendChild(label);
+                div.appendChild(input);
+                gridDiv.appendChild(div);
+            }
+            
+            minuteContainer.appendChild(gridDiv);
+            
+            // Hinweis für den Benutzer
+            const hint = document.createElement('p');
+            hint.textContent = 'Hinweis: Minuten 31-59 werden automatisch als "60 minus Minute" berechnet (z.B. 45 = "füfzäh vor")';
+            hint.style.fontSize = '0.8em';
+            hint.style.color = '#666';
+            hint.style.fontStyle = 'italic';
+            minuteContainer.appendChild(hint);
+            
+            // Speichern-Button ganz unten hinzufügen
             const saveBtn = document.createElement('button');
             saveBtn.textContent = 'Dialekteinstellungen speichern';
             saveBtn.onclick = saveCustomDialect;
-            container.appendChild(saveBtn);
+            saveBtn.style.marginTop = '15px';
+            saveBtn.style.padding = '8px 16px';
+            minuteContainer.appendChild(saveBtn);
         }
         
         function saveCustomDialect() {
@@ -798,26 +852,31 @@
             const customHourNames = {};
             for (let i = 1; i <= 12; i++) {
                 const hourInput = document.getElementById(`customHour${i}`);
-                const hourKey = i === 12 ? 0 : i;
-                customHourNames[hourKey] = hourInput.value;
+                if (hourInput) {
+                    const hourKey = i === 12 ? 0 : i;
+                    customHourNames[hourKey] = hourInput.value;
+                }
             }
             localStorage.setItem('customHourNames', JSON.stringify(customHourNames));
             
-            // Erstelle einfache Minuten-Namen für den benutzerdefinierten Dialekt
-            // Dies könnte erweitert werden, um auch benutzerdefinierte Minutennamen zu unterstützen
-            const minuteNames = {
-                1: 'eis', 2: 'zwöi', 3: 'drü', 4: 'vier', 5: 'föif',
-                6: 'sächs', 7: 'sibä', 8: 'acht', 9: 'nün', 10: 'zäh',
-                11: 'elf', 12: 'zwölf', 13: 'drizäh', 14: 'vierzäh', 15: 'füfzäh',
-                16: 'sächzäh', 17: 'sibzäh', 18: 'achtzäh', 19: 'nünzäh', 20: 'zwänzg',
-                21: 'einäzwänzg', 22: 'zwöiäzwänzg', 23: 'drüäzwänzg', 24: 'vieräzwänzg', 25: 'föifäzwänzg',
-                26: 'sächsäzwänzg', 27: 'sibäzwänzg', 28: 'achtäzwänzg', 29: 'nünäzwänzg', 30: 'drissig'
-            };
-            localStorage.setItem('customMinuteNames', JSON.stringify(minuteNames));
+            // Speichere die benutzerdefinierten Minutennamen
+            const customMinuteNames = {};
+            for (let i = 1; i <= 30; i++) {
+                const minuteInput = document.getElementById(`customMinute${i}`);
+                if (minuteInput) {
+                    customMinuteNames[i] = minuteInput.value;
+                }
+            }
+            localStorage.setItem('customMinuteNames', JSON.stringify(customMinuteNames));
             
-            alert('Benutzerdefinierte Dialekteinstellungen gespeichert');
+            alert('Benutzerdefinierte Dialekteinstellungen gespeichert (inkl. Minuten)!');
         }
         
+        // Hilfsfunktion zum Laden der benutzerdefinierten Minutennamen
+        function getCustomMinuteName(minute) {
+            const customMinuteNames = JSON.parse(localStorage.getItem('customMinuteNames')) || {};
+            return customMinuteNames[minute] || minute.toString();
+        }
         function changeTimezone() {
             selectedTimezone = document.getElementById('timezone').value;
         }
