@@ -918,7 +918,15 @@
                 document.getElementById('customDialectSettings').style.display = 'none';
             }
         }
-        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch((err) => {
+                    alert(`Fehler beim Fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
         function createCustomHourInputs() {
             const container = document.getElementById('customHourInputs');
             if (container.children.length > 0) return; // Bereits erstellt
