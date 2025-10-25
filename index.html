@@ -198,20 +198,26 @@
         
         <div class="form-group">
             <h3>Account</h3>
+
             <div id="loginForm">
-                <label for="email">E-Mail:</label>
-                <input type="email" id="email" placeholder="deine@email.ch">
-                <label for="password">Passwort:</label>
-                <input type="password" id="password" placeholder="Passwort">
-                <button onclick="login()">Anmelden</button>
-                <button onclick="register()">Registrieren</button>
-            </div>
-            <div id="loggedInInfo" style="display: none;">
-                <p>Angemeldet als: <span id="userEmail"></span></p>
-                <button onclick="logout()">Abmelden</button>
-            </div>
+              <label for="email">E-Mail:</label>
+              <input type="email" id="email" placeholder="deine@email.ch">
+              <label for="password">Passwort:</label>
+              <input type="password" id="password" placeholder="Passwort">
+              <button onclick="login()">Anmelden</button>
+              <button onclick="register()">Registrieren</button>
+              <button onclick="resetPassword()" style="background-color: #777; margin-top: 10px;">Passwort vergessen?</button>
+          </div>
+
+
         </div>
-        
+          <div id="loggedInInfo" style="display: none;">
+              <p>Angemeldet als: <span id="userEmail"></span></p>
+              <p id="verificationStatus" style="color: #f39c12;"></p>
+              <button id="verifyEmailBtn" onclick="sendVerificationEmail()" style="display: none; background-color: #e67e22;">E-Mail erneut senden</button>
+              <button id="checkVerificationBtn" onclick="checkVerificationStatus()" style="display: none; background-color: #3498db; margin-top: 5px;">Status prüfen</button>
+              <button onclick="logout()">Abmelden</button>
+          </div>
         <div class="form-group">
             <h3>Farbeinstellungen</h3>
             <label for="textColor">Textfarbe:</label>
@@ -292,9 +298,9 @@
     <script type="module">
       // ========== FIREBASE INITIALISIERUNG ==========
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
       import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-  
+      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+      
       const firebaseConfig = {
           apiKey: "AIzaSyCHMesg5msmeMgLhRlZSFpi0QyW2zxPPCc",
           authDomain: "uhrschweiz.firebaseapp.com",
@@ -369,7 +375,75 @@
       }
   
       // ========== ACCOUNT FUNKTIONEN ==========
+      window.resetPassword = async function() {
+          const email = document.getElementById('email').value;
+          
+          if (!email) {
+              alert('Bitte gib deine E-Mail-Adresse ein.');
+              return;
+          }
+          
+          try {
+              await sendPasswordResetEmail(auth, email);
+              alert('✅ Passwort-Reset E-Mail wurde gesendet! Bitte überprüfe dein Postfach.');
+          } catch (error) {
+              console.error('❌ Passwort-Reset Fehler:', error);
+              if (error.code === 'auth/user-not-found') {
+                  alert('Diese E-Mail-Adresse ist nicht registriert.');
+              } else if (error.code === 'auth/invalid-email') {
+                  alert('Ungültige E-Mail-Adresse.');
+              } else {
+                  alert('Fehler: ' + error.message);
+              }
+          }
+      };
       
+
+      window.sendVerificationEmail = async function() {
+          if (!auth.currentUser) {
+              alert('Kein Benutzer angemeldet.');
+              return;
+          }
+          
+          try {
+              await sendEmailVerification(auth.currentUser);
+              alert('✅ Verifizierungs-E-Mail wurde gesendet! Bitte überprüfe dein Postfach und klicke auf den Link. Danach kannst du hier auf "Status prüfen" klicken.');
+              document.getElementById('verifyEmailBtn').style.display = 'none';
+              
+              // Button zum Status prüfen anzeigen
+              document.getElementById('checkVerificationBtn').style.display = 'block';
+          } catch (error) {
+              console.error('❌ Verifizierungs-Fehler:', error);
+              if (error.code === 'auth/too-many-requests') {
+                  alert('Zu viele Anfragen. Bitte warte einen Moment.');
+              } else {
+                  alert('Fehler: ' + error.message);
+              }
+          }
+      };
+      
+      // Neue Funktion zum Prüfen des Verifizierungsstatus
+      window.checkVerificationStatus = async function() {
+          if (!auth.currentUser) {
+              alert('Kein Benutzer angemeldet.');
+              return;
+          }
+          
+          try {
+              // User-Daten vom Server neu laden
+              await auth.currentUser.reload();
+              
+              if (auth.currentUser.emailVerified) {
+                  alert('✅ Deine E-Mail wurde erfolgreich verifiziert!');
+                  updateLoginUI();
+              } else {
+                  alert('⚠️ E-Mail noch nicht verifiziert. Bitte überprüfe dein Postfach und klicke auf den Verifizierungs-Link.');
+              }
+          } catch (error) {
+              console.error('❌ Fehler beim Prüfen:', error);
+              alert('Fehler beim Prüfen des Status: ' + error.message);
+          }
+      };
       window.login = async function() {
           const email = document.getElementById('email').value;
           const password = document.getElementById('password').value;
@@ -419,6 +493,8 @@
           try {
               const userCredential = await createUserWithEmailAndPassword(auth, email, password);
               const user = userCredential.user;
+              // E-Mail Verifizierung senden
+              await sendEmailVerification(user);
               
               currentUser = {
                   uid: user.uid,
@@ -440,7 +516,7 @@
               localStorage.setItem('currentUser', JSON.stringify(currentUser));
               updateLoginUI();
               loadUserSettings();
-              alert('✅ Registrierung erfolgreich!');
+              alert('✅ Registrierung erfolgreich! Eine Verifizierungs-E-Mail wurde an deine Adresse gesendet.');
           } catch (error) {
               console.error('❌ Registrierungs Fehler:', error);
               if (error.code === 'auth/email-already-in-use') {
@@ -493,17 +569,33 @@
           });
       }
       
+
       function updateLoginUI() {
           if (currentUser) {
               document.getElementById('loginForm').style.display = 'none';
               document.getElementById('loggedInInfo').style.display = 'block';
               document.getElementById('userEmail').innerText = currentUser.email;
+              
+              // Verifizierungsstatus anzeigen
+              const user = auth.currentUser;
+              if (user) {
+                  if (user.emailVerified) {
+                      document.getElementById('verificationStatus').innerHTML = '✅ E-Mail verifiziert';
+                      document.getElementById('verificationStatus').style.color = '#27ae60';
+                      document.getElementById('verifyEmailBtn').style.display = 'none';
+                      document.getElementById('checkVerificationBtn').style.display = 'none';
+                  } else {
+                      document.getElementById('verificationStatus').innerHTML = '⚠️ E-Mail nicht verifiziert';
+                      document.getElementById('verificationStatus').style.color = '#f39c12';
+                      document.getElementById('verifyEmailBtn').style.display = 'block';
+                      document.getElementById('checkVerificationBtn').style.display = 'block';
+                  }
+              }
           } else {
               document.getElementById('loginForm').style.display = 'block';
               document.getElementById('loggedInInfo').style.display = 'none';
           }
       }
-  
       // ========== DEIN BESTEHENDER CODE (unverändert) ==========
       
       function init() {
@@ -817,7 +909,6 @@
                 const betAmount=parseInt(document.getElementById('betInput').value);
                 if(!betAmount||betAmount<5){game.showMessage('Minimum bet is $5!'); return;}
                 if(betAmount>game.balance){game.showMessage('Insufficient funds!'); return;}
-                if(betAmount>500){game.showMessage('Maximum bet is $500!'); return;}
                 game.balance-=betAmount; game.currentBet=betAmount; game.updateDisplay(); document.getElementById('betInput').value=''; game.startGame();
             };
             window.hit=function(){game.hit();};
