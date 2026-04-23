@@ -11,7 +11,8 @@
         }
         
         body {
-            position: fixed
+            position: fixed;
+            inset: 0;
             margin: 0;
             padding: 0;
             font-family: 'Helvetica', sans-serif;
@@ -19,6 +20,7 @@
             color: var(--text-color);
             display: flex;
             flex-direction: column;
+            width: 100vw;
             height: 100vh;
             overflow: hidden;
         }
@@ -32,8 +34,8 @@
         }
         
         .menu-icon {
-            position: absolute;   /* absolut im Bezug auf den Header */
-            top: 20px;            /* Abstand vom oberen Rand */
+            position: absolute;
+            top: 20px;
             left: 20px;
             cursor: pointer;
             width: 30px;
@@ -44,8 +46,8 @@
         }
         
         .fullscreen-btn {
-            position: absolute;   /* absolut im Bezug auf den Header */
-            top: -30px;            /* Abstand vom oberen Rand */
+            position: absolute;
+            top: -30px;
             right: -10px;
             background: none;
             border: none;
@@ -69,7 +71,7 @@
             position: fixed;
             top: 0;
             left: -300px;
-            bottom: 0;          /* statt height */
+            bottom: 0;
             width: 300px;
             background-color: #333;
             transition: 0.5s;
@@ -78,7 +80,6 @@
             overflow-y: auto;
             box-sizing: border-box;
         }
-
         
         .sidebar.active {
             left: 0;
@@ -99,12 +100,15 @@
             justify-content: center;
             align-items: center;
             position: relative;
+            width: 100%;
+            min-height: 0;
         }
         
         .clock {
             position: relative;
-            width: 500px;
-            height: 500px;
+            /* Fill the smaller of width/height so nothing is clipped */
+            width: min(90vw, 80vh);
+            height: min(90vw, 80vh);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -120,10 +124,12 @@
         }
         
         .time-text {
-            font-size: 2.8rem;
+            /* Scale font with viewport so text fills the clock area */
+            font-size: clamp(1.5rem, 7vmin, 5rem);
             text-align: center;
             z-index: 10;
-            max-width: 80%;
+            max-width: 90%;
+            word-break: keep-all;
         }
         
         .form-group {
@@ -188,7 +194,6 @@
             <span class="fullscreen-icon">⛶</span>
         </button>
     </div>
-    
 
     <div class="overlay" onclick="toggleSidebar()"></div>
     
@@ -198,26 +203,25 @@
         
         <div class="form-group">
             <h3>Account</h3>
-
             <div id="loginForm">
-              <label for="email">E-Mail:</label>
-              <input type="email" id="email" placeholder="deine@email.ch">
-              <label for="password">Passwort:</label>
-              <input type="password" id="password" placeholder="Passwort">
-              <button onclick="login()">Anmelden</button>
-              <button onclick="register()">Registrieren</button>
-              <button onclick="resetPassword()" style="background-color: #777; margin-top: 10px;">Passwort vergessen?</button>
-          </div>
-
-
+                <label for="email">E-Mail:</label>
+                <input type="email" id="email" placeholder="deine@email.ch">
+                <label for="password">Passwort:</label>
+                <input type="password" id="password" placeholder="Passwort">
+                <button onclick="login()">Anmelden</button>
+                <button onclick="register()">Registrieren</button>
+                <button onclick="resetPassword()" style="background-color: #777; margin-top: 10px;">Passwort vergessen?</button>
+            </div>
         </div>
-          <div id="loggedInInfo" style="display: none;">
-              <p>Angemeldet als: <span id="userEmail"></span></p>
-              <p id="verificationStatus" style="color: #f39c12;"></p>
-              <button id="verifyEmailBtn" onclick="sendVerificationEmail()" style="display: none; background-color: #e67e22;">E-Mail erneut senden</button>
-              <button id="checkVerificationBtn" onclick="checkVerificationStatus()" style="display: none; background-color: #3498db; margin-top: 5px;">Status prüfen</button>
-              <button onclick="logout()">Abmelden</button>
-          </div>
+
+        <div id="loggedInInfo" style="display: none;">
+            <p>Angemeldet als: <span id="userEmail"></span></p>
+            <p id="verificationStatus" style="color: #f39c12;"></p>
+            <button id="verifyEmailBtn" onclick="sendVerificationEmail()" style="display: none; background-color: #e67e22;">E-Mail erneut senden</button>
+            <button id="checkVerificationBtn" onclick="checkVerificationStatus()" style="display: none; background-color: #3498db; margin-top: 5px;">Status prüfen</button>
+            <button onclick="logout()">Abmelden</button>
+        </div>
+
         <div class="form-group">
             <h3>Farbeinstellungen</h3>
             <label for="textColor">Textfarbe:</label>
@@ -258,28 +262,41 @@
                 <option value="custom">Eigener Dialekt</option>
             </select>
             
+            <!-- FIX: All custom dialect fields now present, including minuteWord -->
             <div id="customDialectSettings" style="display: none; margin-top: 15px;">
                 <h4>Eigenen Dialekt bearbeiten</h4>
+
                 <label for="customPrefix">Uhrzeitpräfix (z.B. "s isch "):</label>
                 <input type="text" id="customPrefix" value="s isch ">
-                
+
                 <label for="customHalf">Halb (z.B. "halbi "):</label>
                 <input type="text" id="customHalf" value="halbi ">
-                
+
                 <label for="customQuarter">Viertel (z.B. "viertel "):</label>
                 <input type="text" id="customQuarter" value="viertel ">
-                
+
                 <label for="customPast">Nach (z.B. "ab "):</label>
                 <input type="text" id="customPast" value="ab ">
-                
+
                 <label for="customTo">Vor (z.B. "vor "):</label>
                 <input type="text" id="customTo" value="vor ">
-                
+
                 <label for="customAlmost">Fast/Gleich (z.B. "gli "):</label>
                 <input type="text" id="customAlmost" value="gli ">
-                
-                <h4>Zahlen anpassen</h4>
+
+                <!-- FIX #1: Missing minuteWord input now added -->
+                <label for="customMinuteWord">Minutenwort (z.B. "Minute" oder leer lassen):</label>
+                <input type="text" id="customMinuteWord" value="">
+
+                <h4>Stunden anpassen</h4>
                 <div id="customHourInputs"></div>
+
+                <h4>Minuten anpassen (1–30)</h4>
+                <!-- FIX #2: Container for minute inputs now in HTML -->
+                <div id="customMinuteInputs"></div>
+
+                <!-- FIX #4: Save button for custom dialect now present -->
+                <button onclick="saveCustomDialect()" style="background-color: #27ae60; margin-top: 10px;">Eigenen Dialekt speichern</button>
             </div>
             
             <button onclick="changeDialect()">Dialekt übernehmen</button>
@@ -296,427 +313,433 @@
     </div>
     
     <script type="module">
-      // ========== FIREBASE INITIALISIERUNG ==========
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-      import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-      
-      const firebaseConfig = {
-          apiKey: "AIzaSyCHMesg5msmeMgLhRlZSFpi0QyW2zxPPCc",
-          authDomain: "uhrschweiz.firebaseapp.com",
-          projectId: "uhrschweiz",
-          storageBucket: "uhrschweiz.firebasestorage.app",
-          messagingSenderId: "71357430750",
-          appId: "1:71357430750:web:a1a2e825175063cf0cbb4f",
-          measurementId: "G-ZLVQ6W33VM"
-      };
-  
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const db = getFirestore(app);
-      
-      console.log("✅ Firebase initialisiert!");
-      // ========== ENDE FIREBASE ==========
-  
-      // Globale Variablen
-      let currentUser = null;
-      let selectedDialect = "zuerich";
-      let selectedTimezone = "Europe/Zurich";
-      
-      // ========== FIREBASE FUNKTIONEN ==========
-      
-      async function loadUserSettingsFromFirebase() {
-          if (!currentUser || !currentUser.uid) return;
-          
-          try {
-              const docRef = doc(db, "users", currentUser.uid);
-              const docSnap = await getDoc(docRef);
-              
-              if (docSnap.exists()) {
-                  const data = docSnap.data();
-                  currentUser.settings = data.settings || {};
-                  loadSavedSettings();
-                  console.log("✅ Einstellungen von Firebase geladen");
-              }
-          } catch (error) {
-              console.error('❌ Fehler beim Laden:', error);
-          }
-      }
-  
-      async function saveSettingsToFirebase() {
-          if (!currentUser || !currentUser.uid) {
-              alert('Bitte zuerst anmelden!');
-              return;
-          }
-          
-          try {
-              const settings = {
-                  textColor: document.getElementById('textColor').value,
-                  bgColor: document.getElementById('bgColor').value,
-                  dialect: selectedDialect,
-                  timezone: selectedTimezone
-              };
-              
-              await setDoc(doc(db, "users", currentUser.uid), {
-                  email: currentUser.email,
-                  settings: settings,
-                  updatedAt: new Date().toISOString()
-              }, { merge: true });
-              
-              currentUser.settings = settings;
-              localStorage.setItem('currentUser', JSON.stringify(currentUser));
-              
-              alert('✅ Einstellungen in der Cloud gespeichert!');
-              console.log("✅ Einstellungen gespeichert");
-          } catch (error) {
-              console.error('❌ Fehler beim Speichern:', error);
-              alert('Fehler: ' + error.message);
-          }
-      }
-  
-      // ========== ACCOUNT FUNKTIONEN ==========
-      window.resetPassword = async function() {
-          const email = document.getElementById('email').value;
-          
-          if (!email) {
-              alert('Bitte gib deine E-Mail-Adresse ein.');
-              return;
-          }
-          
-          try {
-              await sendPasswordResetEmail(auth, email);
-              alert('✅ Passwort-Reset E-Mail wurde gesendet! Bitte überprüfe dein Postfach.');
-          } catch (error) {
-              console.error('❌ Passwort-Reset Fehler:', error);
-              if (error.code === 'auth/user-not-found') {
-                  alert('Diese E-Mail-Adresse ist nicht registriert.');
-              } else if (error.code === 'auth/invalid-email') {
-                  alert('Ungültige E-Mail-Adresse.');
-              } else {
-                  alert('Fehler: ' + error.message);
-              }
-          }
-      };
-      
+        // ========== FIREBASE INITIALISIERUNG ==========
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHMesg5msmeMgLhRlZSFpi0QyW2zxPPCc",
+            authDomain: "uhrschweiz.firebaseapp.com",
+            projectId: "uhrschweiz",
+            storageBucket: "uhrschweiz.firebasestorage.app",
+            messagingSenderId: "71357430750",
+            appId: "1:71357430750:web:a1a2e825175063cf0cbb4f",
+            measurementId: "G-ZLVQ6W33VM"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        console.log("✅ Firebase initialisiert!");
+        // ========== ENDE FIREBASE ==========
+    
+        // Globale Variablen
+        let currentUser = null;
+        let selectedDialect = "zuerich";
+        let selectedTimezone = "Europe/Zurich";
+        
+        // ========== FIREBASE FUNKTIONEN ==========
+        
+        async function loadUserSettingsFromFirebase() {
+            if (!currentUser || !currentUser.uid) return;
+            
+            try {
+                const docRef = doc(db, "users", currentUser.uid);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    currentUser.settings = data.settings || {};
+                    loadSavedSettings();
+                    console.log("✅ Einstellungen von Firebase geladen");
+                }
+            } catch (error) {
+                console.error('❌ Fehler beim Laden:', error);
+            }
+        }
+    
+        async function saveSettingsToFirebase() {
+            if (!currentUser || !currentUser.uid) {
+                alert('Bitte zuerst anmelden!');
+                return;
+            }
+            
+            try {
+                const settings = {
+                    textColor: document.getElementById('textColor').value,
+                    bgColor: document.getElementById('bgColor').value,
+                    dialect: selectedDialect,
+                    timezone: selectedTimezone
+                };
+                
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    email: currentUser.email,
+                    settings: settings,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+                
+                currentUser.settings = settings;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                alert('✅ Einstellungen in der Cloud gespeichert!');
+                console.log("✅ Einstellungen gespeichert");
+            } catch (error) {
+                console.error('❌ Fehler beim Speichern:', error);
+                alert('Fehler: ' + error.message);
+            }
+        }
+    
+        // ========== ACCOUNT FUNKTIONEN ==========
+        window.resetPassword = async function() {
+            const email = document.getElementById('email').value;
+            
+            if (!email) {
+                alert('Bitte gib deine E-Mail-Adresse ein.');
+                return;
+            }
+            
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert('✅ Passwort-Reset E-Mail wurde gesendet! Bitte überprüfe dein Postfach.');
+            } catch (error) {
+                console.error('❌ Passwort-Reset Fehler:', error);
+                if (error.code === 'auth/user-not-found') {
+                    alert('Diese E-Mail-Adresse ist nicht registriert.');
+                } else if (error.code === 'auth/invalid-email') {
+                    alert('Ungültige E-Mail-Adresse.');
+                } else {
+                    alert('Fehler: ' + error.message);
+                }
+            }
+        };
+    
+        window.sendVerificationEmail = async function() {
+            if (!auth.currentUser) {
+                alert('Kein Benutzer angemeldet.');
+                return;
+            }
+            
+            try {
+                await sendEmailVerification(auth.currentUser);
+                alert('✅ Verifizierungs-E-Mail wurde gesendet! Bitte überprüfe dein Postfach und klicke auf den Link. Danach kannst du hier auf "Status prüfen" klicken.');
+                document.getElementById('verifyEmailBtn').style.display = 'none';
+                document.getElementById('checkVerificationBtn').style.display = 'block';
+            } catch (error) {
+                console.error('❌ Verifizierungs-Fehler:', error);
+                if (error.code === 'auth/too-many-requests') {
+                    alert('Zu viele Anfragen. Bitte warte einen Moment.');
+                } else {
+                    alert('Fehler: ' + error.message);
+                }
+            }
+        };
+        
+        window.checkVerificationStatus = async function() {
+            if (!auth.currentUser) {
+                alert('Kein Benutzer angemeldet.');
+                return;
+            }
+            
+            try {
+                await auth.currentUser.reload();
+                
+                if (auth.currentUser.emailVerified) {
+                    alert('✅ Deine E-Mail wurde erfolgreich verifiziert!');
+                    updateLoginUI();
+                } else {
+                    alert('⚠️ E-Mail noch nicht verifiziert. Bitte überprüfe dein Postfach und klicke auf den Verifizierungs-Link.');
+                }
+            } catch (error) {
+                console.error('❌ Fehler beim Prüfen:', error);
+                alert('Fehler beim Prüfen des Status: ' + error.message);
+            }
+        };
 
-      window.sendVerificationEmail = async function() {
-          if (!auth.currentUser) {
-              alert('Kein Benutzer angemeldet.');
-              return;
-          }
-          
-          try {
-              await sendEmailVerification(auth.currentUser);
-              alert('✅ Verifizierungs-E-Mail wurde gesendet! Bitte überprüfe dein Postfach und klicke auf den Link. Danach kannst du hier auf "Status prüfen" klicken.');
-              document.getElementById('verifyEmailBtn').style.display = 'none';
-              
-              // Button zum Status prüfen anzeigen
-              document.getElementById('checkVerificationBtn').style.display = 'block';
-          } catch (error) {
-              console.error('❌ Verifizierungs-Fehler:', error);
-              if (error.code === 'auth/too-many-requests') {
-                  alert('Zu viele Anfragen. Bitte warte einen Moment.');
-              } else {
-                  alert('Fehler: ' + error.message);
-              }
-          }
-      };
-      
-      // Neue Funktion zum Prüfen des Verifizierungsstatus
-      window.checkVerificationStatus = async function() {
-          if (!auth.currentUser) {
-              alert('Kein Benutzer angemeldet.');
-              return;
-          }
-          
-          try {
-              // User-Daten vom Server neu laden
-              await auth.currentUser.reload();
-              
-              if (auth.currentUser.emailVerified) {
-                  alert('✅ Deine E-Mail wurde erfolgreich verifiziert!');
-                  updateLoginUI();
-              } else {
-                  alert('⚠️ E-Mail noch nicht verifiziert. Bitte überprüfe dein Postfach und klicke auf den Verifizierungs-Link.');
-              }
-          } catch (error) {
-              console.error('❌ Fehler beim Prüfen:', error);
-              alert('Fehler beim Prüfen des Status: ' + error.message);
-          }
-      };
-      window.login = async function() {
-          const email = document.getElementById('email').value;
-          const password = document.getElementById('password').value;
-          
-          if (!email || !password) {
-              alert('Bitte E-Mail und Passwort eingeben.');
-              return;
-          }
-          
-          try {
-              const userCredential = await signInWithEmailAndPassword(auth, email, password);
-              currentUser = {
-                  uid: userCredential.user.uid,
-                  email: userCredential.user.email,
-                  settings: {}
-              };
-              
-              await loadUserSettingsFromFirebase();
-              updateLoginUI();
-              alert('✅ Erfolgreich angemeldet!');
-          } catch (error) {
-              console.error('❌ Login Fehler:', error);
-              if (error.code === 'auth/invalid-credential') {
-                  alert('Falsche E-Mail oder Passwort.');
-              } else if (error.code === 'auth/user-not-found') {
-                  alert('Benutzer nicht gefunden.');
-              } else {
-                  alert('Fehler: ' + error.message);
-              }
-          }
-      };
-      
-      window.register = async function() {
-          const email = document.getElementById('email').value;
-          const password = document.getElementById('password').value;
-          
-          if (!email || !password) {
-              alert('Bitte E-Mail und Passwort eingeben.');
-              return;
-          }
-          
-          if (password.length < 6) {
-              alert('Passwort muss mindestens 6 Zeichen lang sein.');
-              return;
-          }
-          
-          try {
-              const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-              const user = userCredential.user;
-              // E-Mail Verifizierung senden
-              await sendEmailVerification(user);
-              
-              currentUser = {
-                  uid: user.uid,
-                  email: user.email,
-                  settings: {
-                      textColor: '#ffffff',
-                      bgColor: '#000000',
-                      dialect: 'zuerich',
-                      timezone: 'Europe/Zurich'
-                  }
-              };
-              
-              await setDoc(doc(db, "users", user.uid), {
-                  email: email,
-                  settings: currentUser.settings,
-                  createdAt: new Date().toISOString()
-              });
-              
-              localStorage.setItem('currentUser', JSON.stringify(currentUser));
-              updateLoginUI();
-              loadUserSettings();
-              alert('✅ Registrierung erfolgreich! Eine Verifizierungs-E-Mail wurde an deine Adresse gesendet.');
-          } catch (error) {
-              console.error('❌ Registrierungs Fehler:', error);
-              if (error.code === 'auth/email-already-in-use') {
-                  alert('Diese E-Mail ist bereits registriert.');
-              } else {
-                  alert('Fehler: ' + error.message);
-              }
-          }
-      };
-      
-      window.logout = async function() {
-          try {
-              await signOut(auth);
-              localStorage.removeItem('currentUser');
-              currentUser = null;
-              updateLoginUI();
-              
-              document.getElementById('textColor').value = '#ffffff';
-              document.getElementById('bgColor').value = '#000000';
-              document.getElementById('dialect').value = 'zuerich';
-              document.getElementById('timezone').value = 'Europe/Zurich';
-              
-              selectedDialect = 'zuerich';
-              selectedTimezone = 'Europe/Zurich';
-              
-              changeColors();
-              alert('✅ Erfolgreich abgemeldet!');
-          } catch (error) {
-              console.error('❌ Logout Fehler:', error);
-          }
-      };
-  
-      function checkLoginStatus() {
-          onAuthStateChanged(auth, async (user) => {
-              if (user) {
-                  currentUser = {
-                      uid: user.uid,
-                      email: user.email,
-                      settings: {}
-                  };
-                  await loadUserSettingsFromFirebase();
-                  updateLoginUI();
-                  console.log("✅ User eingeloggt:", user.email);
-              } else {
-                  localStorage.removeItem('currentUser');
-                  currentUser = null;
-                  updateLoginUI();
-                  console.log("ℹ️ Kein User eingeloggt");
-              }
-          });
-      }
-      
+        window.login = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Bitte E-Mail und Passwort eingeben.');
+                return;
+            }
+            
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                currentUser = {
+                    uid: userCredential.user.uid,
+                    email: userCredential.user.email,
+                    settings: {}
+                };
+                
+                await loadUserSettingsFromFirebase();
+                updateLoginUI();
+                alert('✅ Erfolgreich angemeldet!');
+            } catch (error) {
+                console.error('❌ Login Fehler:', error);
+                if (error.code === 'auth/invalid-credential') {
+                    alert('Falsche E-Mail oder Passwort.');
+                } else if (error.code === 'auth/user-not-found') {
+                    alert('Benutzer nicht gefunden.');
+                } else {
+                    alert('Fehler: ' + error.message);
+                }
+            }
+        };
+        
+        window.register = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Bitte E-Mail und Passwort eingeben.');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Passwort muss mindestens 6 Zeichen lang sein.');
+                return;
+            }
+            
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                await sendEmailVerification(user);
+                
+                currentUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    settings: {
+                        textColor: '#ffffff',
+                        bgColor: '#000000',
+                        dialect: 'zuerich',
+                        timezone: 'Europe/Zurich'
+                    }
+                };
+                
+                await setDoc(doc(db, "users", user.uid), {
+                    email: email,
+                    settings: currentUser.settings,
+                    createdAt: new Date().toISOString()
+                });
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateLoginUI();
+                loadUserSettings();
+                alert('✅ Registrierung erfolgreich! Eine Verifizierungs-E-Mail wurde an deine Adresse gesendet.');
+            } catch (error) {
+                console.error('❌ Registrierungs Fehler:', error);
+                if (error.code === 'auth/email-already-in-use') {
+                    alert('Diese E-Mail ist bereits registriert.');
+                } else {
+                    alert('Fehler: ' + error.message);
+                }
+            }
+        };
+        
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                updateLoginUI();
+                
+                document.getElementById('textColor').value = '#ffffff';
+                document.getElementById('bgColor').value = '#000000';
+                document.getElementById('dialect').value = 'zuerich';
+                document.getElementById('timezone').value = 'Europe/Zurich';
+                
+                selectedDialect = 'zuerich';
+                selectedTimezone = 'Europe/Zurich';
+                
+                changeColors();
+                alert('✅ Erfolgreich abgemeldet!');
+            } catch (error) {
+                console.error('❌ Logout Fehler:', error);
+            }
+        };
+    
+        function checkLoginStatus() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = {
+                        uid: user.uid,
+                        email: user.email,
+                        settings: {}
+                    };
+                    await loadUserSettingsFromFirebase();
+                    updateLoginUI();
+                    console.log("✅ User eingeloggt:", user.email);
+                } else {
+                    localStorage.removeItem('currentUser');
+                    currentUser = null;
+                    updateLoginUI();
+                    console.log("ℹ️ Kein User eingeloggt");
+                }
+            });
+        }
+    
+        function updateLoginUI() {
+            if (currentUser) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('loggedInInfo').style.display = 'block';
+                document.getElementById('userEmail').innerText = currentUser.email;
+                
+                const user = auth.currentUser;
+                if (user) {
+                    if (user.emailVerified) {
+                        document.getElementById('verificationStatus').innerHTML = '✅ E-Mail verifiziert';
+                        document.getElementById('verificationStatus').style.color = '#27ae60';
+                        document.getElementById('verifyEmailBtn').style.display = 'none';
+                        document.getElementById('checkVerificationBtn').style.display = 'none';
+                    } else {
+                        document.getElementById('verificationStatus').innerHTML = '⚠️ E-Mail nicht verifiziert';
+                        document.getElementById('verificationStatus').style.color = '#f39c12';
+                        document.getElementById('verifyEmailBtn').style.display = 'block';
+                        document.getElementById('checkVerificationBtn').style.display = 'block';
+                    }
+                }
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('loggedInInfo').style.display = 'none';
+            }
+        }
 
-      function updateLoginUI() {
-          if (currentUser) {
-              document.getElementById('loginForm').style.display = 'none';
-              document.getElementById('loggedInInfo').style.display = 'block';
-              document.getElementById('userEmail').innerText = currentUser.email;
-              
-              // Verifizierungsstatus anzeigen
-              const user = auth.currentUser;
-              if (user) {
-                  if (user.emailVerified) {
-                      document.getElementById('verificationStatus').innerHTML = '✅ E-Mail verifiziert';
-                      document.getElementById('verificationStatus').style.color = '#27ae60';
-                      document.getElementById('verifyEmailBtn').style.display = 'none';
-                      document.getElementById('checkVerificationBtn').style.display = 'none';
-                  } else {
-                      document.getElementById('verificationStatus').innerHTML = '⚠️ E-Mail nicht verifiziert';
-                      document.getElementById('verificationStatus').style.color = '#f39c12';
-                      document.getElementById('verifyEmailBtn').style.display = 'block';
-                      document.getElementById('checkVerificationBtn').style.display = 'block';
-                  }
-              }
-          } else {
-              document.getElementById('loginForm').style.display = 'block';
-              document.getElementById('loggedInInfo').style.display = 'none';
-          }
-      }
-      // ========== DEIN BESTEHENDER CODE (unverändert) ==========
-      
-      function init() {
-          checkLoginStatus();
-          loadSavedSettings();
-          updateClock();
-          setInterval(updateClock, 1000);
-          
-          document.getElementById('dialect').addEventListener('change', function() {
-              if (this.value === 'custom') {
-                  document.getElementById('customDialectSettings').style.display = 'block';
-                  createCustomHourInputs();
-              } else {
-                  document.getElementById('customDialectSettings').style.display = 'none';
-              }
-          });
-      }
-      
-      function updateClock() {
-          const now = new Date();
-          const options = { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-          const formatter = new Intl.DateTimeFormat('de-CH', options);
-          const parts = formatter.formatToParts(now);
-          
-          let hours = parseInt(parts.find(p => p.type === 'hour').value, 10);
-          let minutes = parseInt(parts.find(p => p.type === 'minute').value, 10);
-          let seconds = parseInt(parts.find(p => p.type === 'second').value, 10);
-          
-          const secondsAngle = seconds * 6;
-          const radius = 220;
-          const x = radius * Math.sin(secondsAngle * Math.PI / 180);
-          const y = -radius * Math.cos(secondsAngle * Math.PI / 180);
-          
-          document.getElementById('secondHand').style.transform = `translate(${x}px, ${y}px)`;
-          
-          const swissGermanTime = convertToSwissGerman(hours, minutes, selectedDialect);
-          document.getElementById('timeText').innerText = swissGermanTime;
-      }
-      
-      function convertToSwissGerman(hours, minutes, dialect) {
-          // [DEIN BESTEHENDER CODE - UNVERÄNDERT]
-          const hourNames = {
-              0: 'zwölfi', 1: 'eis', 2: 'zwei', 3: 'drü', 4: 'vieri', 
-              5: 'föifi', 6: 'sächsi', 7: 'sibni', 8: 'achti', 
-              9: 'nüni', 10: 'zähni', 11: 'elfi', 12: 'zwölfi'
-          };
-          
-          const minuteNames = {
-              1: 'eis', 2: 'zwöi', 3: 'drü', 4: 'vier', 5: 'föif',
-              6: 'sächs', 7: 'sibä', 8: 'acht', 9: 'nün', 10: 'zäh',
-              11: 'elf', 12: 'zwölf', 13: 'drizäh', 14: 'vierzäh', 15: 'füfzäh',
-              16: 'sächzäh', 17: 'sibzäh', 18: 'achtzäh', 19: 'nünzäh', 20: 'zwänzg',
-              21: 'einäzwänzg', 22: 'zwöiäzwänzg', 23: 'drüäzwänzg', 24: 'vieräzwänzg', 25: 'föifäzwänzg',
-              26: 'sächsäzwänzg', 27: 'sibäzwänzg', 28: 'achtäzwänzg', 29: 'nünäzwänzg', 30: 'drissig'
-          };
-          
-          const dialects = {
-              zuerich: { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's isch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'gli ', minuteWord: '' },
-              bern: { hourNames: {...hourNames, 1: 'eis', 3: 'drü'}, minuteNames: {...minuteNames, 1: 'eis', 2: 'zwöi', 7: 'siebä'}, prefix: 's isch ', half: 'haubi ', quarter: 'viertu ', to: 'vor ', past: 'ab ', almost: 'gli ', minuteWord: '' },
-              basel: { hourNames: {...hourNames, 1: 'ais', 9: 'nyni'}, minuteNames: {...minuteNames, 1: 'ais', 9: 'nyn', 19: 'nynzäh', 29: 'nynäzwanzig'}, prefix: 's isch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'glai ', minuteWord: '' },
-              luzern: { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's esch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'glei ', minuteWord: '' },
-              stgallen: { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's isch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'fast ', minuteWord: '' },
-              wallis: { hourNames: {...hourNames, 1: 'eis', 3: 'dri'}, minuteNames: {...minuteNames, 3: 'dri'}, prefix: 's ischt ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'gli ', minuteWord: '' },
-              aargau: { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's esch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'glei ', minuteWord: '' },
-              thurgau: { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's isch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'naach ', almost: 'glii ', minuteWord: '' },
-              graubuenden: { hourNames: {...hourNames, 1: 'eis', 3: 'drii'}, minuteNames: {...minuteNames, 1: 'eis', 3: 'drii'}, prefix: 's isch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'nach ', almost: 'glich ', minuteWord: '' },
-              appenzell: { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's ischt ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'noch ', almost: 'glii ', minuteWord: '' },
-              custom: { hourNames: JSON.parse(localStorage.getItem('customHourNames')) || {...hourNames}, minuteNames: JSON.parse(localStorage.getItem('customMinuteNames')) || {...minuteNames}, prefix: localStorage.getItem('customPrefix') || 's isch ', half: localStorage.getItem('customHalf') || 'halbi ', quarter: localStorage.getItem('customQuarter') || 'viertel ', to: localStorage.getItem('customTo') || 'vor ', past: localStorage.getItem('customPast') || 'ab ', almost: localStorage.getItem('customAlmost') || 'gli ', minuteWord: localStorage.getItem('customMinuteWord') || 'Minute' }
-          };
-          
-          const dialectSettings = dialects[dialect] || dialects.zuerich;
-          let h = hours % 12;
-          if (h === 0) h = 12;
-          let nextHour = (h % 12) + 1;
-          
-          if (minutes === 0) {
-              return `${dialectSettings.prefix}${dialectSettings.hourNames[h]} `;
-          } else if (minutes === 30) {
-              return `${dialectSettings.prefix}${dialectSettings.half}${dialectSettings.hourNames[nextHour]}`;
-          } else if (minutes === 15) {
-              return `${dialectSettings.prefix}${dialectSettings.quarter}${dialectSettings.past}${dialectSettings.hourNames[h]}`;
-          } else if (minutes === 45) {
-              return `${dialectSettings.prefix}${dialectSettings.quarter}${dialectSettings.to}${dialectSettings.hourNames[nextHour]}`;
-          }
-          
-          let minuteText = '';
-          if (minutes <= 30) {
-              minuteText = dialectSettings.minuteNames[minutes] || minutes.toString();
-              return `${dialectSettings.prefix}${minuteText} ${dialectSettings.minuteWord} ${dialectSettings.past}${dialectSettings.hourNames[h]}`;
-          } else {
-              const minutesToNext = 60 - minutes;
-              minuteText = dialectSettings.minuteNames[minutesToNext] || minutesToNext.toString();
-              return `${dialectSettings.prefix}${minuteText} ${dialectSettings.minuteWord} ${dialectSettings.to}${dialectSettings.hourNames[nextHour]}`;
-          }
-      }
-      
-      window.toggleSidebar = function() {
-          document.querySelector('.sidebar').classList.toggle('active');
-          document.querySelector('.overlay').style.display = 
-              document.querySelector('.sidebar').classList.contains('active') ? 'block' : 'none';
-      };
-      
-      window.changeColors = function() {
-          const textColor = document.getElementById('textColor').value;
-          const bgColor = document.getElementById('bgColor').value;
-          
-          document.documentElement.style.setProperty('--text-color', textColor);
-          document.documentElement.style.setProperty('--bg-color', bgColor);
-          
-          if (textColor.toLowerCase() === '#ff0080') {
-              startBlackjack();
-          }
-      };
-      
-      // [FÜGE HIER DEINE BLACKJACK FUNKTION EIN - startBlackjack() etc.]
-      function startBlackjack() {
-            // Remove previous instance if it exists
+        // ========== UHR & DIALEKT ==========
+        
+        function init() {
+            checkLoginStatus();
+            loadSavedSettings();
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // FIX #3: Both createCustomHourInputs AND createCustomMinuteInputs called in listener
+            document.getElementById('dialect').addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    document.getElementById('customDialectSettings').style.display = 'block';
+                    createCustomHourInputs();
+                    createCustomMinuteInputs();
+                } else {
+                    document.getElementById('customDialectSettings').style.display = 'none';
+                }
+            });
+        }
+        
+        function updateClock() {
+            const now = new Date();
+            const options = { timeZone: selectedTimezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const formatter = new Intl.DateTimeFormat('de-CH', options);
+            const parts = formatter.formatToParts(now);
+            
+            let hours = parseInt(parts.find(p => p.type === 'hour').value, 10);
+            let minutes = parseInt(parts.find(p => p.type === 'minute').value, 10);
+            let seconds = parseInt(parts.find(p => p.type === 'second').value, 10);
+            
+            const secondsAngle = seconds * 6;
+            // Use the actual rendered clock size so the dot stays on the edge at any screen size
+            const clockEl = document.querySelector('.clock');
+            const radius = (clockEl ? clockEl.offsetWidth : 500) * 0.44;
+            const x = radius * Math.sin(secondsAngle * Math.PI / 180);
+            const y = -radius * Math.cos(secondsAngle * Math.PI / 180);
+            
+            document.getElementById('secondHand').style.transform = `translate(${x}px, ${y}px)`;
+            
+            const swissGermanTime = convertToSwissGerman(hours, minutes, selectedDialect);
+            document.getElementById('timeText').innerText = swissGermanTime;
+        }
+        
+        function convertToSwissGerman(hours, minutes, dialect) {
+            const hourNames = {
+                0: 'zwölfi', 1: 'eis', 2: 'zwei', 3: 'drü', 4: 'vieri', 
+                5: 'föifi', 6: 'sächsi', 7: 'sibni', 8: 'achti', 
+                9: 'nüni', 10: 'zähni', 11: 'elfi', 12: 'zwölfi'
+            };
+            
+            const minuteNames = {
+                1: 'eis', 2: 'zwöi', 3: 'drü', 4: 'vier', 5: 'föif',
+                6: 'sächs', 7: 'sibä', 8: 'acht', 9: 'nün', 10: 'zäh',
+                11: 'elf', 12: 'zwölf', 13: 'drizäh', 14: 'vierzäh', 15: 'füfzäh',
+                16: 'sächzäh', 17: 'sibzäh', 18: 'achtzäh', 19: 'nünzäh', 20: 'zwänzg',
+                21: 'einäzwänzg', 22: 'zwöiäzwänzg', 23: 'drüäzwänzg', 24: 'vieräzwänzg', 25: 'föifäzwänzg',
+                26: 'sächsäzwänzg', 27: 'sibäzwänzg', 28: 'achtäzwänzg', 29: 'nünäzwänzg', 30: 'drissig'
+            };
+            
+            const dialects = {
+                zuerich:     { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's isch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'gli ', minuteWord: '' },
+                bern:        { hourNames: {...hourNames, 1: 'eis', 3: 'drü'}, minuteNames: {...minuteNames, 1: 'eis', 2: 'zwöi', 7: 'siebä'}, prefix: 's isch ', half: 'haubi ', quarter: 'viertu ', to: 'vor ', past: 'ab ', almost: 'gli ', minuteWord: '' },
+                basel:       { hourNames: {...hourNames, 1: 'ais', 9: 'nyni'}, minuteNames: {...minuteNames, 1: 'ais', 9: 'nyn', 19: 'nynzäh', 29: 'nynäzwanzig'}, prefix: 's isch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'glai ', minuteWord: '' },
+                luzern:      { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's esch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'glei ', minuteWord: '' },
+                stgallen:    { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's isch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'fast ', minuteWord: '' },
+                wallis:      { hourNames: {...hourNames, 1: 'eis', 3: 'dri'}, minuteNames: {...minuteNames, 3: 'dri'}, prefix: 's ischt ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'gli ', minuteWord: '' },
+                aargau:      { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's esch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'ab ', almost: 'glei ', minuteWord: '' },
+                thurgau:     { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's isch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'naach ', almost: 'glii ', minuteWord: '' },
+                graubuenden: { hourNames: {...hourNames, 1: 'eis', 3: 'drii'}, minuteNames: {...minuteNames, 1: 'eis', 3: 'drii'}, prefix: 's isch ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'nach ', almost: 'glich ', minuteWord: '' },
+                appenzell:   { hourNames: {...hourNames}, minuteNames: {...minuteNames}, prefix: 's ischt ', half: 'halbi ', quarter: 'viertel ', to: 'vor ', past: 'noch ', almost: 'glii ', minuteWord: '' },
+                custom: {
+                    hourNames:   JSON.parse(localStorage.getItem('customHourNames'))   || {...hourNames},
+                    minuteNames: JSON.parse(localStorage.getItem('customMinuteNames')) || {...minuteNames},
+                    prefix:      localStorage.getItem('customPrefix')     || 's isch ',
+                    half:        localStorage.getItem('customHalf')       || 'halbi ',
+                    quarter:     localStorage.getItem('customQuarter')    || 'viertel ',
+                    to:          localStorage.getItem('customTo')         || 'vor ',
+                    past:        localStorage.getItem('customPast')       || 'ab ',
+                    almost:      localStorage.getItem('customAlmost')     || 'gli ',
+                    minuteWord:  localStorage.getItem('customMinuteWord') || ''
+                }
+            };
+            
+            const d = dialects[dialect] || dialects.zuerich;
+            let h = hours % 12;
+            if (h === 0) h = 12;
+            let nextHour = (h % 12) + 1;
+            
+            if (minutes === 0) {
+                return `${d.prefix}${d.hourNames[h]}`;
+            } else if (minutes === 30) {
+                return `${d.prefix}${d.half}${d.hourNames[nextHour]}`;
+            } else if (minutes === 15) {
+                return `${d.prefix}${d.quarter}${d.past}${d.hourNames[h]}`;
+            } else if (minutes === 45) {
+                return `${d.prefix}${d.quarter}${d.to}${d.hourNames[nextHour]}`;
+            }
+            
+            // FIX #6: No double space when minuteWord is empty
+            const mw = d.minuteWord ? ` ${d.minuteWord}` : '';
+
+            if (minutes <= 30) {
+                const minuteText = d.minuteNames[minutes] || minutes.toString();
+                return `${d.prefix}${minuteText}${mw} ${d.past}${d.hourNames[h]}`;
+            } else {
+                const minutesToNext = 60 - minutes;
+                const minuteText = d.minuteNames[minutesToNext] || minutesToNext.toString();
+                return `${d.prefix}${minuteText}${mw} ${d.to}${d.hourNames[nextHour]}`;
+            }
+        }
+        
+        window.toggleSidebar = function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.overlay').style.display = 
+                document.querySelector('.sidebar').classList.contains('active') ? 'block' : 'none';
+        };
+        
+        window.changeColors = function() {
+            const textColor = document.getElementById('textColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+            
+            document.documentElement.style.setProperty('--text-color', textColor);
+            document.documentElement.style.setProperty('--bg-color', bgColor);
+            
+            if (textColor.toLowerCase() === '#ff0080') {
+                startBlackjack();
+            }
+        };
+        
+        function startBlackjack() {
             const existing = document.getElementById('blackjackContainer');
             if (existing) existing.remove();
         
-            // Create container
             const container = document.createElement('div');
             container.id = 'blackjackContainer';
             container.style.position = 'fixed';
@@ -729,7 +752,6 @@
             container.style.overflow = 'auto';
             container.style.padding = '0px';
         
-            // Add HTML content (your original game HTML)
             container.innerHTML = `
                 <button onclick="document.getElementById('blackjackContainer').remove()" 
                     style="position:absolute;top:20px;right:20px;z-index:10000;padding:10px 20px;">Close</button>
@@ -737,22 +759,11 @@
                     <div class="header">
                         <h1 class="title">🎰 BLACKJACK CASINO 🎰</h1>
                     </div>
-        
                     <div class="money-display">
-                        <div class="money-item">
-                            <div class="money-label">💰 Balance</div>
-                            <div class="money-value" id="balance">$1000</div>
-                        </div>
-                        <div class="money-item">
-                            <div class="money-label">🎯 Current Bet</div>
-                            <div class="money-value" id="currentBet">$0</div>
-                        </div>
-                        <div class="money-item">
-                            <div class="money-label">🏆 Winnings</div>
-                            <div class="money-value" id="winnings">$0</div>
-                        </div>
+                        <div class="money-item"><div class="money-label">💰 Balance</div><div class="money-value" id="balance">$1000</div></div>
+                        <div class="money-item"><div class="money-label">🎯 Current Bet</div><div class="money-value" id="currentBet">$0</div></div>
+                        <div class="money-item"><div class="money-label">🏆 Winnings</div><div class="money-value" id="winnings">$0</div></div>
                     </div>
-        
                     <div class="betting-area" id="bettingArea">
                         <div class="betting-title">Place Your Bet</div>
                         <div class="bet-controls">
@@ -765,19 +776,16 @@
                             <button class="btn btn-warning" onclick="clearBet()">Clear</button>
                         </div>
                     </div>
-        
                     <div class="game-area">
                         <div class="dealer-area">
                             <div class="area-title">🎩 Dealer</div>
                             <div class="cards-container" id="dealerCards"></div>
                             <div class="score-display" id="dealerScore">Score: ?</div>
                         </div>
-        
                         <div class="controls" id="gameControls">
                             <button class="btn btn-primary" id="hitBtn" onclick="hit()">Hit</button>
                             <button class="btn btn-danger" id="standBtn" onclick="stand()">Stand</button>
                         </div>
-        
                         <div class="player-area">
                             <div class="area-title">👤 You</div>
                             <div class="cards-container" id="playerCards"></div>
@@ -789,323 +797,270 @@
         
             document.body.appendChild(container);
         
-            // Inject full CSS if not already loaded
             if (!document.getElementById('blackjackStyles')) {
                 const style = document.createElement('style');
                 style.id = 'blackjackStyles';
                 style.innerHTML = `
-                    .game-container {
-                        font-family: 'Arial', sans-serif;
-                        background: linear-gradient(135deg, #0f4c3a, #1a5f4a, #2d8f6f);
-                        min-height: 100vh;
-                        color: white;
-                        padding: 20px;
-                    }
+                    .game-container { font-family:'Arial',sans-serif; background:linear-gradient(135deg,#0f4c3a,#1a5f4a,#2d8f6f); min-height:100vh; color:white; padding:20px; }
                     .title { font-size:2.5rem; text-align:center; margin-bottom:20px; color:#ffd700; }
                     .money-display { display:flex; justify-content:center; gap:20px; margin-bottom:20px; flex-wrap:wrap; }
-                    .money-item { background: rgba(0,0,0,0.3); padding:10px 20px; border-radius:10px; border:2px solid #ffd700; text-align:center; }
+                    .money-item { background:rgba(0,0,0,0.3); padding:10px 20px; border-radius:10px; border:2px solid #ffd700; text-align:center; }
                     .money-label { color:#ffd700; font-size:1rem; margin-bottom:5px; }
                     .money-value { font-weight:bold; font-size:1.5rem; }
                     .area-title { font-size:1.2rem; color:#ffd700; margin-bottom:10px; }
                     .cards-container { display:flex; justify-content:center; gap:10px; min-height:100px; align-items:center; flex-wrap:wrap; }
-                    .card {
-                        width:80px; height:112px; background:white; border-radius:10px;
-                        display:flex; flex-direction:column; justify-content:space-between;
-                        padding:8px; box-shadow:0 8px 16px rgba(0,0,0,0.3); position:relative; overflow:hidden;
-                    }
-                    .card-top, .card-bottom { font-weight:bold; font-size:1rem; }
+                    .card { width:80px; height:112px; background:white; border-radius:10px; display:flex; flex-direction:column; justify-content:space-between; padding:8px; box-shadow:0 8px 16px rgba(0,0,0,0.3); position:relative; overflow:hidden; }
+                    .card-top,.card-bottom { font-weight:bold; font-size:1rem; }
                     .card-center { font-size:1.5rem; text-align:center; }
-                    .red { color:#e74c3c; }
-                    .black { color:#2c3e50; }
-                    .card.hidden {
-                        background: linear-gradient(45deg,#1a237e,#3949ab,#1a237e);
-                        border:2px solid #ffd700;
-                        position:relative;
-                    }
-                    .card.hidden::before {
-                        content:'';
-                        position:absolute; top:10%; left:10%; right:10%; bottom:10%;
-                        background: repeating-linear-gradient(45deg,#3949ab,#3949ab 5px,#1a237e 5px,#1a237e 10px),
-                                    repeating-linear-gradient(-45deg,#3949ab,#3949ab 5px,#1a237e 5px,#1a237e 10px);
-                        border-radius:8px;
-                    }
-                    .card.hidden::after {
-                        content: '♠ ♥ ♦ ♣';
-                        position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-                        font-size:1rem; color:#ffd700; font-weight:bold; text-align:center; z-index:1;
-                    }
+                    .red { color:#e74c3c; } .black { color:#2c3e50; }
+                    .card.hidden { background:linear-gradient(45deg,#1a237e,#3949ab,#1a237e); border:2px solid #ffd700; position:relative; }
+                    .card.hidden::before { content:''; position:absolute; top:10%; left:10%; right:10%; bottom:10%; background:repeating-linear-gradient(45deg,#3949ab,#3949ab 5px,#1a237e 5px,#1a237e 10px),repeating-linear-gradient(-45deg,#3949ab,#3949ab 5px,#1a237e 5px,#1a237e 10px); border-radius:8px; }
+                    .card.hidden::after { content:'♠ ♥ ♦ ♣'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:1rem; color:#ffd700; font-weight:bold; text-align:center; z-index:1; }
                     .controls { display:flex; justify-content:center; gap:10px; margin:20px 0; flex-wrap:wrap; }
                     .btn { padding:8px 16px; border:none; border-radius:25px; font-weight:bold; cursor:pointer; }
-                    .btn-primary { background:#27ae60; color:white; }
-                    .btn-danger { background:#e74c3c; color:white; }
-                    .btn-warning { background:#f39c12; color:white; }
+                    .btn-primary { background:#27ae60; color:white; } .btn-danger { background:#e74c3c; color:white; } .btn-warning { background:#f39c12; color:white; }
                     .betting-area { margin-bottom:20px; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; }
                     .bet-input { padding:5px; border-radius:5px; border:2px solid #ffd700; width:100px; text-align:center; }
                     .chip { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; margin:0 5px; border:2px solid white; }
-                    .chip-5 { background:#e74c3c; }
-                    .chip-10 { background:#3498db; }
-                    .chip-25 { background:#27ae60; }
-                    .chip-100 { background:#2c3e50; }
-                    .message { position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.9); padding:20px; border-radius:10px; text-align:center; border:2px solid #ffd700; z-index:10000; }
+                    .chip-5 { background:#e74c3c; } .chip-10 { background:#3498db; } .chip-25 { background:#27ae60; } .chip-100 { background:#2c3e50; }
+                    .message { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.9); padding:20px; border-radius:10px; text-align:center; border:2px solid #ffd700; z-index:10000; }
                 `;
                 document.head.appendChild(style);
             }
         
-            // --- Blackjack JS classes & functions ---
             class BlackjackGame {
-                constructor() {
-                    this.balance=1000; this.currentBet=0; this.totalWinnings=0; this.deck=[];
-                    this.playerHand=[]; this.dealerHand=[]; this.gameInProgress=false; this.dealerHidden=true;
-                    this.initializeGame();
-                }
+                constructor() { this.balance=1000; this.currentBet=0; this.totalWinnings=0; this.deck=[]; this.playerHand=[]; this.dealerHand=[]; this.gameInProgress=false; this.dealerHidden=true; this.initializeGame(); }
                 initializeGame() { this.createDeck(); this.shuffleDeck(); this.updateDisplay(); this.hideGameControls(); }
-                createDeck() { const suits=['♠','♥','♦','♣'], values=['A','2','3','4','5','6','7','8','9','10','J','Q','K']; this.deck=[]; for(let suit of suits){for(let value of values){this.deck.push({suit,value,numValue:this.getCardValue(value)});}}}
-                shuffleDeck() { for(let i=this.deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [this.deck[i],this.deck[j]]=[this.deck[j],this.deck[i]];}}
+                createDeck() { const suits=['♠','♥','♦','♣'],values=['A','2','3','4','5','6','7','8','9','10','J','Q','K']; this.deck=[]; for(let s of suits)for(let v of values)this.deck.push({suit:s,value:v,numValue:this.getCardValue(v)}); }
+                shuffleDeck() { for(let i=this.deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[this.deck[i],this.deck[j]]=[this.deck[j],this.deck[i]];} }
                 getCardValue(v){if(v==='A')return 11;if(['J','Q','K'].includes(v))return 10;return parseInt(v);}
-                calculateScore(hand){let score=0, aces=0; for(let c of hand){score+=c.numValue;if(c.value==='A') aces++;} while(score>21 && aces>0){score-=10; aces--;} return score;}
-                dealCard(isPlayer=true){if(this.deck.length===0){this.createDeck(); this.shuffleDeck();} const c=this.deck.pop(); if(isPlayer)this.playerHand.push(c); else this.dealerHand.push(c); this.updateDisplay(); return c;}
-                createCardElement(card, hidden=false){const el=document.createElement('div'); el.className='card'; if(hidden){el.classList.add('hidden');} else {const isRed=['♥','♦'].includes(card.suit); el.innerHTML=`<div class="card-top ${isRed?'red':'black'}">${card.value}${card.suit}</div><div class="card-center ${isRed?'red':'black'}">${card.suit}</div><div class="card-bottom ${isRed?'red':'black'}">${card.value}${card.suit}</div>`;} return el;}
-                updateDisplay() {
+                calculateScore(hand){let s=0,a=0;for(let c of hand){s+=c.numValue;if(c.value==='A')a++;}while(s>21&&a>0){s-=10;a--;}return s;}
+                dealCard(isPlayer=true){if(this.deck.length===0){this.createDeck();this.shuffleDeck();}const c=this.deck.pop();if(isPlayer)this.playerHand.push(c);else this.dealerHand.push(c);this.updateDisplay();return c;}
+                createCardElement(card,hidden=false){const el=document.createElement('div');el.className='card';if(hidden){el.classList.add('hidden');}else{const r=['♥','♦'].includes(card.suit);el.innerHTML=`<div class="card-top ${r?'red':'black'}">${card.value}${card.suit}</div><div class="card-center ${r?'red':'black'}">${card.suit}</div><div class="card-bottom ${r?'red':'black'}">${card.value}${card.suit}</div>`;}return el;}
+                updateDisplay(){
                     document.getElementById('balance').textContent=`$${this.balance}`;
                     document.getElementById('currentBet').textContent=`$${this.currentBet}`;
                     document.getElementById('winnings').textContent=`$${this.totalWinnings}`;
-        
-                    const playerCardsEl=document.getElementById('playerCards'); playerCardsEl.innerHTML=''; for(let c of this.playerHand){playerCardsEl.appendChild(this.createCardElement(c));}
-                    const dealerCardsEl=document.getElementById('dealerCards'); dealerCardsEl.innerHTML=''; for(let i=0;i<this.dealerHand.length;i++){const hidden=i===0 && this.dealerHidden && this.gameInProgress; dealerCardsEl.appendChild(this.createCardElement(this.dealerHand[i], hidden));}
-        
-                    const playerScore=this.calculateScore(this.playerHand);
-                    document.getElementById('playerScore').textContent=`Score: ${playerScore}`;
-                    if(this.dealerHidden && this.gameInProgress && this.dealerHand.length>0){
-                        const visibleScore=this.calculateScore(this.dealerHand.slice(1));
-                        document.getElementById('dealerScore').textContent=`Score: ${visibleScore} + ?`;
-                    } else {
-                        const dealerScore=this.calculateScore(this.dealerHand);
-                        document.getElementById('dealerScore').textContent=`Score: ${dealerScore}`;
-                    }
+                    const pc=document.getElementById('playerCards');pc.innerHTML='';for(let c of this.playerHand)pc.appendChild(this.createCardElement(c));
+                    const dc=document.getElementById('dealerCards');dc.innerHTML='';for(let i=0;i<this.dealerHand.length;i++){const h=i===0&&this.dealerHidden&&this.gameInProgress;dc.appendChild(this.createCardElement(this.dealerHand[i],h));}
+                    document.getElementById('playerScore').textContent=`Score: ${this.calculateScore(this.playerHand)}`;
+                    if(this.dealerHidden&&this.gameInProgress&&this.dealerHand.length>0){document.getElementById('dealerScore').textContent=`Score: ${this.calculateScore(this.dealerHand.slice(1))} + ?`;}else{document.getElementById('dealerScore').textContent=`Score: ${this.calculateScore(this.dealerHand)}`;}
                 }
-                showGameControls(){document.getElementById('gameControls').style.display='flex'; document.getElementById('bettingArea').style.display='none';}
-                hideGameControls(){document.getElementById('gameControls').style.display='none'; document.getElementById('bettingArea').style.display='block';}
-                startGame(){if(this.currentBet===0){this.showMessage('Please place a bet first!'); return;} this.playerHand=[]; this.dealerHand=[]; this.gameInProgress=true; this.dealerHidden=true; this.dealCard(false); this.dealCard(true); this.dealCard(false); this.dealCard(true); this.showGameControls(); this.updateDisplay();}
-                hit(){if(!this.gameInProgress)return; this.dealCard(true); const score=this.calculateScore(this.playerHand); if(score>21){this.endGame('bust','Bust! You went over 21!');} else if(score===21){this.stand();}}
-                stand(){if(!this.gameInProgress)return; this.dealerHidden=false; this.updateDisplay(); setTimeout(()=>this.dealerPlay(),500);}
-                dealerPlay(){let dealerScore=this.calculateScore(this.dealerHand); const drawCard=()=>{if(dealerScore<17){this.dealCard(false); dealerScore=this.calculateScore(this.dealerHand); setTimeout(drawCard,500);} else {this.determineWinner();}}; drawCard();}
-                determineWinner(){const playerScore=this.calculateScore(this.playerHand), dealerScore=this.calculateScore(this.dealerHand); if(dealerScore>21){this.endGame('win','Dealer busts! You win!');} else if(playerScore>dealerScore){this.endGame('win','You win!');} else if(dealerScore>playerScore){this.endGame('lose','Dealer wins!');} else {this.endGame('tie','It\'s a tie!');}}
-                endGame(result,message){this.gameInProgress=false; this.dealerHidden=false; let winAmount=0; switch(result){case'blackjack': winAmount=Math.floor(this.currentBet*2.5); break; case'win': winAmount=this.currentBet*2; break; case'tie': winAmount=this.currentBet; break; case'lose': case'bust': winAmount=0;} this.balance+=winAmount; if(winAmount>this.currentBet)this.totalWinnings+=(winAmount-this.currentBet); this.currentBet=0; this.updateDisplay(); setTimeout(()=>{this.showMessage(message+(winAmount>0?` You won $${winAmount}!` : ''), result==='win'||result==='blackjack'?'win':result==='tie'?'' : 'lose');},500); this.hideGameControls();}
-                showMessage(text,type=''){const el=document.createElement('div'); el.className=`message ${type}`; el.innerHTML=`<p>${text}</p><br><button class="btn btn-primary" onclick="this.parentElement.remove()">Continue</button>`; document.body.appendChild(el); setTimeout(()=>{if(el.parentElement)el.remove();},4000);}
+                showGameControls(){document.getElementById('gameControls').style.display='flex';document.getElementById('bettingArea').style.display='none';}
+                hideGameControls(){document.getElementById('gameControls').style.display='none';document.getElementById('bettingArea').style.display='block';}
+                startGame(){if(this.currentBet===0){this.showMessage('Please place a bet first!');return;}this.playerHand=[];this.dealerHand=[];this.gameInProgress=true;this.dealerHidden=true;this.dealCard(false);this.dealCard(true);this.dealCard(false);this.dealCard(true);this.showGameControls();this.updateDisplay();}
+                hit(){if(!this.gameInProgress)return;this.dealCard(true);const s=this.calculateScore(this.playerHand);if(s>21){this.endGame('bust','Bust! You went over 21!');}else if(s===21){this.stand();}}
+                stand(){if(!this.gameInProgress)return;this.dealerHidden=false;this.updateDisplay();setTimeout(()=>this.dealerPlay(),500);}
+                dealerPlay(){let ds=this.calculateScore(this.dealerHand);const draw=()=>{if(ds<17){this.dealCard(false);ds=this.calculateScore(this.dealerHand);setTimeout(draw,500);}else{this.determineWinner();}};draw();}
+                determineWinner(){const ps=this.calculateScore(this.playerHand),ds=this.calculateScore(this.dealerHand);if(ds>21){this.endGame('win','Dealer busts! You win!');}else if(ps>ds){this.endGame('win','You win!');}else if(ds>ps){this.endGame('lose','Dealer wins!');}else{this.endGame('tie',"It's a tie!");}}
+                endGame(result,message){this.gameInProgress=false;this.dealerHidden=false;let w=0;switch(result){case'blackjack':w=Math.floor(this.currentBet*2.5);break;case'win':w=this.currentBet*2;break;case'tie':w=this.currentBet;break;}this.balance+=w;if(w>this.currentBet)this.totalWinnings+=(w-this.currentBet);this.currentBet=0;this.updateDisplay();setTimeout(()=>{this.showMessage(message+(w>0?` You won $${w}!`:''),result==='win'||result==='blackjack'?'win':result==='tie'?'':'lose');},500);this.hideGameControls();}
+                showMessage(text,type=''){const el=document.createElement('div');el.className=`message ${type}`;el.innerHTML=`<p>${text}</p><br><button class="btn btn-primary" onclick="this.parentElement.remove()">Continue</button>`;document.body.appendChild(el);setTimeout(()=>{if(el.parentElement)el.remove();},4000);}
             }
         
-            // Initialize game
             window.game = new BlackjackGame();
-        
-            // Global button functions
-            window.addChip = function(amount){
-                const betInput=document.getElementById('betInput');
-                const current=parseInt(betInput.value)||0;
-                if(current+amount<=game.balance) betInput.value=current+amount;
-                else game.showMessage('Insufficient funds!');
-            };
-            window.clearBet=function(){document.getElementById('betInput').value='';};
-            window.placeBet=function(){
-                const betAmount=parseInt(document.getElementById('betInput').value);
-                if(!betAmount||betAmount<5){game.showMessage('Minimum bet is $5!'); return;}
-                if(betAmount>game.balance){game.showMessage('Insufficient funds!'); return;}
-                game.balance-=betAmount; game.currentBet=betAmount; game.updateDisplay(); document.getElementById('betInput').value=''; game.startGame();
-            };
-            window.hit=function(){game.hit();};
-            window.stand=function(){game.stand();};
-        }      
-      window.changeDialect = function() {
-          selectedDialect = document.getElementById('dialect').value;
-          
-          if (selectedDialect === 'custom') {
-              document.getElementById('customDialectSettings').style.display = 'block';
-              createCustomHourInputs();
-              createCustomMinuteInputs();
-          } else {
-              document.getElementById('customDialectSettings').style.display = 'none';
-          }
-      };
-      
-      window.toggleFullscreen = function() {
-          if (!document.fullscreenElement) {
-              document.documentElement.requestFullscreen().catch((err) => {
-                  alert(`Fehler beim Fullscreen: ${err.message}`);
-              });
-          } else {
-              document.exitFullscreen();
-          }
-      };
-      
-      function createCustomHourInputs() {
-          // [DEIN BESTEHENDER CODE]
-          const container = document.getElementById('customHourInputs');
-          if (container.children.length > 0) return;
-          
-          const customHourNames = JSON.parse(localStorage.getItem('customHourNames')) || {
-              0: 'zwölfi', 1: 'eis', 2: 'zwei', 3: 'drü', 4: 'vieri', 
-              5: 'föifi', 6: 'sächsi', 7: 'sibni', 8: 'achti', 
-              9: 'nüni', 10: 'zähni', 11: 'elfi', 12: 'zwölfi'
-          };
-          
-          const hourDiv = document.createElement('div');
-          hourDiv.innerHTML = '<h5>Stunden</h5>';
-          container.appendChild(hourDiv);
-          
-          for (let i = 1; i <= 12; i++) {
-              const label = document.createElement('label');
-              label.setAttribute('for', `customHour${i}`);
-              label.textContent = `${i}:`;
-              
-              const input = document.createElement('input');
-              input.setAttribute('type', 'text');
-              input.setAttribute('id', `customHour${i}`);
-              input.setAttribute('data-hour', i === 12 ? 0 : i);
-              input.value = customHourNames[i === 12 ? 0 : i];
-              
-              const div = document.createElement('div');
-              div.appendChild(label);
-              div.appendChild(input);
-              container.appendChild(div);
-          }
-      }
-      
-      function createCustomMinuteInputs() {
-          // [DEIN BESTEHENDER CODE - gekürzt]
-          const container = document.getElementById('customMinuteInputs');
-          if (!container) {
-              const newContainer = document.createElement('div');
-              newContainer.setAttribute('id', 'customMinuteInputs');
-              document.getElementById('customDialectSettings').appendChild(newContainer);
-          }
-          // ... rest deines Codes
-      }
-      
-      window.saveCustomDialect = function() {
-          // [DEIN BESTEHENDER CODE]
-          const customPrefix = document.getElementById('customPrefix').value;
-          const customHalf = document.getElementById('customHalf').value;
-          const customQuarter = document.getElementById('customQuarter').value;
-          const customPast = document.getElementById('customPast').value;
-          const customTo = document.getElementById('customTo').value;
-          const customAlmost = document.getElementById('customAlmost').value;
-          const customMinuteWord = document.getElementById('customMinuteWord').value;
-          
-          localStorage.setItem('customPrefix', customPrefix);
-          localStorage.setItem('customHalf', customHalf);
-          localStorage.setItem('customQuarter', customQuarter);
-          localStorage.setItem('customPast', customPast);
-          localStorage.setItem('customTo', customTo);
-          localStorage.setItem('customAlmost', customAlmost);
-          localStorage.setItem('customMinuteWord', customMinuteWord);
-          
-          const customHourNames = {};
-          for (let i = 1; i <= 12; i++) {
-              const hourInput = document.getElementById(`customHour${i}`);
-              if (hourInput) {
-                  const hourKey = i === 12 ? 0 : i;
-                  customHourNames[hourKey] = hourInput.value;
-              }
-          }
-          localStorage.setItem('customHourNames', JSON.stringify(customHourNames));
-          
-          const customMinuteNames = {};
-          for (let i = 1; i <= 30; i++) {
-              const minuteInput = document.getElementById(`customMinute${i}`);
-              if (minuteInput) {
-                  customMinuteNames[i] = minuteInput.value;
-              }
-          }
-          localStorage.setItem('customMinuteNames', JSON.stringify(customMinuteNames));
-          
-          alert('Benutzerdefinierte Dialekteinstellungen gespeichert!');
-      };
-      
-      window.changeTimezone = function() {
-          selectedTimezone = document.getElementById('timezone').value;
-      };
-      
-      window.saveSettings = async function() {
-          const textColor = document.getElementById('textColor').value;
-          const bgColor = document.getElementById('bgColor').value;
-          
-          if (currentUser && currentUser.uid) {
-              await saveSettingsToFirebase();
-          } else {
-              const guestSettings = {
-                  textColor: textColor,
-                  bgColor: bgColor,
-                  dialect: selectedDialect,
-                  timezone: selectedTimezone
-              };
-              
-              localStorage.setItem('guestSettings', JSON.stringify(guestSettings));
-              alert('⚠️ Einstellungen temporär gespeichert. Für Cloud-Speicherung bitte anmelden.');
-          }
-      };
-      
-      function loadUserSettings() {
-          if (currentUser && currentUser.settings) {
-              const settings = currentUser.settings;
-              
-              if (settings.textColor) {
-                  document.getElementById('textColor').value = settings.textColor;
-              }
-              
-              if (settings.bgColor) {
-                  document.getElementById('bgColor').value = settings.bgColor;
-              }
-              
-              if (settings.dialect) {
-                  document.getElementById('dialect').value = settings.dialect;
-                  selectedDialect = settings.dialect;
-              }
-              
-              if (settings.timezone) {
-                  document.getElementById('timezone').value = settings.timezone;
-                  selectedTimezone = settings.timezone;
-              }
-              
+            window.addChip = function(a){const i=document.getElementById('betInput');const c=parseInt(i.value)||0;if(c+a<=game.balance)i.value=c+a;else game.showMessage('Insufficient funds!');};
+            window.clearBet = function(){document.getElementById('betInput').value='';};
+            window.placeBet = function(){const b=parseInt(document.getElementById('betInput').value);if(!b||b<5){game.showMessage('Minimum bet is $5!');return;}if(b>game.balance){game.showMessage('Insufficient funds!');return;}game.balance-=b;game.currentBet=b;game.updateDisplay();document.getElementById('betInput').value='';game.startGame();};
+            window.hit = function(){game.hit();};
+            window.stand = function(){game.stand();};
+        }
 
-          }
-      }
-      
-      function loadSavedSettings() {
-          if (currentUser && currentUser.settings) {
-              const settings = currentUser.settings;
-              console.log("🔍 DEBUG loadSavedSettings:", settings);  // ← NEU
-              console.log("🔍 Textfarbe:", settings.textColor);      // ← NEU
-              console.log("🔍 Hintergrund:", settings.bgColor);      // ← NEU
-              console.log("🔍 Dialekt:", settings.dialect);          // ← NEU
-              
-              if (settings.textColor) {
-                  document.getElementById('textColor').value = settings.textColor;
-                  document.documentElement.style.setProperty('--text-color', settings.textColor);
-              }
-              
-              if (settings.bgColor) {
-                  document.getElementById('bgColor').value = settings.bgColor;
-                  document.documentElement.style.setProperty('--bg-color', settings.bgColor);
-              }
-              
-              if (settings.dialect) {
-                  document.getElementById('dialect').value = settings.dialect;
-                  selectedDialect = settings.dialect;
-                  changeDialect();
-              }
-              
-              if (settings.timezone) {
-                  document.getElementById('timezone').value = settings.timezone;
-                  selectedTimezone = settings.timezone;
-              }
-              
-              console.log("✅ Einstellungen angewendet");
-          }
-      }
-          
-      
-      
-      // Initialisieren
-      window.onload = init;
-  </script>
+        // ========== DIALEKT FUNKTIONEN ==========
+
+        window.changeDialect = function() {
+            selectedDialect = document.getElementById('dialect').value;
+            
+            if (selectedDialect === 'custom') {
+                document.getElementById('customDialectSettings').style.display = 'block';
+                createCustomHourInputs();
+                createCustomMinuteInputs(); // FIX #3: always called here too
+            } else {
+                document.getElementById('customDialectSettings').style.display = 'none';
+            }
+        };
+        
+        window.toggleFullscreen = function() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch((err) => {
+                    alert(`Fehler beim Fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        };
+        
+        function createCustomHourInputs() {
+            const container = document.getElementById('customHourInputs');
+            if (container.children.length > 0) return;
+            
+            const customHourNames = JSON.parse(localStorage.getItem('customHourNames')) || {
+                0: 'zwölfi', 1: 'eis', 2: 'zwei', 3: 'drü', 4: 'vieri', 
+                5: 'föifi', 6: 'sächsi', 7: 'sibni', 8: 'achti', 
+                9: 'nüni', 10: 'zähni', 11: 'elfi', 12: 'zwölfi'
+            };
+            
+            for (let i = 1; i <= 12; i++) {
+                const label = document.createElement('label');
+                label.setAttribute('for', `customHour${i}`);
+                label.textContent = `${i}:`;
+                
+                const input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('id', `customHour${i}`);
+                input.setAttribute('data-hour', i === 12 ? 0 : i);
+                input.value = customHourNames[i === 12 ? 0 : i] || '';
+                
+                const div = document.createElement('div');
+                div.appendChild(label);
+                div.appendChild(input);
+                container.appendChild(div);
+            }
+        }
+        
+        // FIX #2: createCustomMinuteInputs fully implemented
+        function createCustomMinuteInputs() {
+            const container = document.getElementById('customMinuteInputs');
+            if (container.children.length > 0) return;
+
+            const defaultMinuteNames = {
+                1: 'eis', 2: 'zwöi', 3: 'drü', 4: 'vier', 5: 'föif',
+                6: 'sächs', 7: 'sibä', 8: 'acht', 9: 'nün', 10: 'zäh',
+                11: 'elf', 12: 'zwölf', 13: 'drizäh', 14: 'vierzäh', 15: 'füfzäh',
+                16: 'sächzäh', 17: 'sibzäh', 18: 'achtzäh', 19: 'nünzäh', 20: 'zwänzg',
+                21: 'einäzwänzg', 22: 'zwöiäzwänzg', 23: 'drüäzwänzg', 24: 'vieräzwänzg', 25: 'föifäzwänzg',
+                26: 'sächsäzwänzg', 27: 'sibäzwänzg', 28: 'achtäzwänzg', 29: 'nünäzwänzg', 30: 'drissig'
+            };
+
+            const customMinuteNames = JSON.parse(localStorage.getItem('customMinuteNames')) || defaultMinuteNames;
+
+            for (let i = 1; i <= 30; i++) {
+                const label = document.createElement('label');
+                label.setAttribute('for', `customMinute${i}`);
+                label.textContent = `${i}:`;
+
+                const input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('id', `customMinute${i}`);
+                input.value = customMinuteNames[i] || '';
+
+                const div = document.createElement('div');
+                div.appendChild(label);
+                div.appendChild(input);
+                container.appendChild(div);
+            }
+        }
+        
+        // FIX #4 & #5: saveCustomDialect now fully works (button exists in HTML, all fields present)
+        window.saveCustomDialect = function() {
+            const customPrefix     = document.getElementById('customPrefix').value;
+            const customHalf       = document.getElementById('customHalf').value;
+            const customQuarter    = document.getElementById('customQuarter').value;
+            const customPast       = document.getElementById('customPast').value;
+            const customTo         = document.getElementById('customTo').value;
+            const customAlmost     = document.getElementById('customAlmost').value;
+            const customMinuteWord = document.getElementById('customMinuteWord').value; // FIX #1
+            
+            localStorage.setItem('customPrefix',     customPrefix);
+            localStorage.setItem('customHalf',       customHalf);
+            localStorage.setItem('customQuarter',    customQuarter);
+            localStorage.setItem('customPast',       customPast);
+            localStorage.setItem('customTo',         customTo);
+            localStorage.setItem('customAlmost',     customAlmost);
+            localStorage.setItem('customMinuteWord', customMinuteWord);
+            
+            const customHourNames = {};
+            for (let i = 1; i <= 12; i++) {
+                const hourInput = document.getElementById(`customHour${i}`);
+                if (hourInput) {
+                    customHourNames[i === 12 ? 0 : i] = hourInput.value;
+                }
+            }
+            localStorage.setItem('customHourNames', JSON.stringify(customHourNames));
+            
+            const customMinuteNames = {};
+            for (let i = 1; i <= 30; i++) {
+                const minuteInput = document.getElementById(`customMinute${i}`);
+                if (minuteInput) {
+                    customMinuteNames[i] = minuteInput.value;
+                }
+            }
+            localStorage.setItem('customMinuteNames', JSON.stringify(customMinuteNames));
+            
+            alert('✅ Eigener Dialekt gespeichert!');
+        };
+        
+        window.changeTimezone = function() {
+            selectedTimezone = document.getElementById('timezone').value;
+        };
+        
+        window.saveSettings = async function() {
+            const textColor = document.getElementById('textColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+            
+            if (currentUser && currentUser.uid) {
+                await saveSettingsToFirebase();
+            } else {
+                const guestSettings = {
+                    textColor: textColor,
+                    bgColor: bgColor,
+                    dialect: selectedDialect,
+                    timezone: selectedTimezone
+                };
+                localStorage.setItem('guestSettings', JSON.stringify(guestSettings));
+                alert('⚠️ Einstellungen temporär gespeichert. Für Cloud-Speicherung bitte anmelden.');
+            }
+        };
+        
+        function loadUserSettings() {
+            if (currentUser && currentUser.settings) {
+                const settings = currentUser.settings;
+                
+                if (settings.textColor) document.getElementById('textColor').value = settings.textColor;
+                if (settings.bgColor)   document.getElementById('bgColor').value   = settings.bgColor;
+                
+                if (settings.dialect) {
+                    document.getElementById('dialect').value = settings.dialect;
+                    selectedDialect = settings.dialect;
+                }
+                
+                if (settings.timezone) {
+                    document.getElementById('timezone').value = settings.timezone;
+                    selectedTimezone = settings.timezone;
+                }
+            }
+        }
+        
+        function loadSavedSettings() {
+            if (currentUser && currentUser.settings) {
+                const settings = currentUser.settings;
+                console.log("🔍 DEBUG loadSavedSettings:", settings);
+                
+                if (settings.textColor) {
+                    document.getElementById('textColor').value = settings.textColor;
+                    document.documentElement.style.setProperty('--text-color', settings.textColor);
+                }
+                
+                if (settings.bgColor) {
+                    document.getElementById('bgColor').value = settings.bgColor;
+                    document.documentElement.style.setProperty('--bg-color', settings.bgColor);
+                }
+                
+                if (settings.dialect) {
+                    document.getElementById('dialect').value = settings.dialect;
+                    selectedDialect = settings.dialect;
+                    changeDialect();
+                }
+                
+                if (settings.timezone) {
+                    document.getElementById('timezone').value = settings.timezone;
+                    selectedTimezone = settings.timezone;
+                }
+                
+                console.log("✅ Einstellungen angewendet");
+            }
+        }
+        
+        window.onload = init;
+    </script>
 </body>
 </html>
